@@ -213,8 +213,11 @@ function buildMap(geo){mapGeo=geo;const [,,W,H]=geo.viewBox.split(" ").map(Numbe
     if(start&&start.moved){suppressClick=true;setTimeout(()=>{suppressClick=false},0)}
     start=pts.size?{view:{...view},pts:new Map([...pts].map(([k,v])=>[k,{...v}])),moved:true}:null};
   svg.addEventListener("pointerup",end);svg.addEventListener("pointercancel",end);
-  svg.addEventListener("wheel",e=>{if(!(e.ctrlKey||e.metaKey)){if(zoomOf()<=1.02)return;showHint("Hold Ctrl (or ⌘) and scroll to zoom");return}
-    e.preventDefault();const p=svgPoint(e.clientX,e.clientY);zoomAt(Math.exp(-e.deltaY*.0025),p.x,p.y,false)},{passive:false});
+  // Scrolling over the map zooms it. Scrolling out at full view lets the page scroll on, so nobody gets stuck.
+  svg.addEventListener("wheel",e=>{const dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);if(!dy)return;
+    if(dy>0&&zoomOf()<=1.02)return;
+    e.preventDefault();if(dy<0&&zoomOf()>=MAXZ-.01)return;
+    const p=svgPoint(e.clientX,e.clientY);zoomAt(Math.exp(-Math.max(-120,Math.min(120,dy))*.0035),p.x,p.y,false)},{passive:false});
   svg.addEventListener("dblclick",e=>{e.preventDefault();const p=svgPoint(e.clientX,e.clientY);zoomAt(2,p.x,p.y,true)});
   stage.addEventListener("keydown",e=>{if(e.target.closest(".mapctl"))return;const step=view.w*.12;
     const k={"+":()=>zoomCenter(1.6),"=":()=>zoomCenter(1.6),"-":()=>zoomCenter(1/1.6),"0":()=>animateTo(full),
