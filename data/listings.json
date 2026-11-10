@@ -1,0 +1,894 @@
+[
+  {
+    "id": "bettergov",
+    "name": "BetterGov.ph",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph volunteers",
+    "area": "Public services",
+    "description": "Volunteer-run portal for Philippine government services, directories and public information.",
+    "sectors": [
+      "govservices",
+      "transparency",
+      "infra"
+    ],
+    "website": "https://bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "seed",
+    "order": 0
+  },
+  {
+    "id": "bg-dynasties",
+    "name": "Dynasties",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Law & governance",
+    "description": "See every candidate for local office since 2001: who won, who lost, who keeps coming back, and which surnames hold the seats in each province and town.",
+    "sectors": [
+      "elections",
+      "transparency"
+    ],
+    "website": "https://dynasties.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 1
+  },
+  {
+    "id": "bg-scamcheck",
+    "name": "ScamCheck",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "Check a suspicious text, screenshot or email for scam signals, then learn what to do next and where to report it.",
+    "sectors": [
+      "safety",
+      "govservices"
+    ],
+    "website": "https://scamcheck.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 2
+  },
+  {
+    "id": "bg-petitions",
+    "name": "Petitions",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Community & learning",
+    "description": "Start, sign and share petitions to decision-makers without creating an account. Each email address counts once.",
+    "sectors": [
+      "elections"
+    ],
+    "website": "https://petition.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 3
+  },
+  {
+    "id": "bg-kuyaj",
+    "name": "Kuya J",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "AI assistant for questions about Philippine government services, laws, budgets and public data, in English, Filipino or Taglish, with sources.",
+    "sectors": [
+      "govservices",
+      "law"
+    ],
+    "website": "https://chat.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 4
+  },
+  {
+    "id": "bg-budget",
+    "name": "Budget Portal",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Explore the proposed FY 2027 national budget and compare it line by line with the FY 2026 General Appropriations Act.",
+    "sectors": [
+      "transparency",
+      "taxes"
+    ],
+    "website": "https://budget.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 5
+  },
+  {
+    "id": "bg-betterlgu",
+    "name": "BetterLGU",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "Find and contribute to community-maintained local government transparency portals across the Philippines.",
+    "sectors": [
+      "govservices",
+      "transparency"
+    ],
+    "website": "https://lgu.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 6
+  },
+  {
+    "id": "bg-juris",
+    "name": "Juris.ph",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Law & governance",
+    "description": "Search Supreme Court decisions and Republic Acts through a free, open legal research interface.",
+    "sectors": [
+      "law"
+    ],
+    "website": "https://juris.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 7
+  },
+  {
+    "id": "bg-batas",
+    "name": "Batas Watch",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Law & governance",
+    "description": "Track House and Senate bills from the 20th Congress with statuses, authors, committees, readable text, analysis and official sources.",
+    "sectors": [
+      "law",
+      "elections"
+    ],
+    "website": "https://bills.juris.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 8
+  },
+  {
+    "id": "bg-asean",
+    "name": "ASEAN in Data",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Compare economies, people, governance and risks across Southeast Asia through sourced charts and downloadable datasets.",
+    "sectors": [
+      "business"
+    ],
+    "website": "https://asean.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 9
+  },
+  {
+    "id": "bg-stats",
+    "name": "Statistics Explorer",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Find PSA OpenSTAT datasets by topic, explore results, and download exact selections with source dates.",
+    "sectors": [
+      "business",
+      "social"
+    ],
+    "website": "https://statistics.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 10
+  },
+  {
+    "id": "bg-politiko",
+    "name": "Politiko",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Law & governance",
+    "description": "Explore members of the 20th Congress through a swipe-based civic discovery experience.",
+    "sectors": [
+      "elections"
+    ],
+    "website": "https://politiko.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 11
+  },
+  {
+    "id": "bg-openbayan",
+    "name": "OpenBayan",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Community & learning",
+    "description": "Discover open-source projects that improve public services, transparency and digital infrastructure across the Philippines.",
+    "sectors": [
+      "govservices",
+      "transparency"
+    ],
+    "website": "https://openbayan.org/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 12
+  },
+  {
+    "id": "bg-startupdb",
+    "name": "StartupDatabase.ph",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Community & learning",
+    "description": "Discover Filipino startups, products, founders, investors, jobs and ecosystem research in a curated community directory.",
+    "sectors": [
+      "business",
+      "labor"
+    ],
+    "website": "https://startupdatabase.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 13
+  },
+  {
+    "id": "bg-betternaia",
+    "name": "BetterNAIA",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "Airport information project. Its public website is offline for now, per BetterGov's projects page.",
+    "sectors": [
+      "travel",
+      "infra"
+    ],
+    "region": "NCR",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "about.bettergov.ph/projects",
+    "order": 14
+  },
+  {
+    "id": "bg-transparency",
+    "name": "Transparency Portal",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Search and browse government procurement, tax, budget and infrastructure records in one public interface.",
+    "sectors": [
+      "transparency",
+      "taxes",
+      "infra"
+    ],
+    "website": "https://transparency.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 15
+  },
+  {
+    "id": "bg-research",
+    "name": "Data Research",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Interactive charts, graphs and maps analyzing government budget, procurement and infrastructure data.",
+    "sectors": [
+      "transparency",
+      "infra"
+    ],
+    "website": "https://research.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 16
+  },
+  {
+    "id": "bg-bisto",
+    "name": "Bisto Proyekto",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Track and report on government infrastructure projects through citizen-powered monitoring.",
+    "sectors": [
+      "infra",
+      "transparency"
+    ],
+    "website": "https://bisto.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 17
+  },
+  {
+    "id": "bg-cadena",
+    "name": "Cadena",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "A digital budget transparency proposal for publishing traceable government budget transactions.",
+    "sectors": [
+      "transparency",
+      "taxes"
+    ],
+    "website": "https://cadena.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 18
+  },
+  {
+    "id": "bg-opendata",
+    "name": "Open Data Portal",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Public datasets organized for research, reuse and civic accountability.",
+    "sectors": [
+      "transparency"
+    ],
+    "website": "https://data.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 19
+  },
+  {
+    "id": "bg-saln",
+    "name": "SALN Tracker",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Browse Statements of Assets, Liabilities and Net Worth of Philippine public officials.",
+    "sectors": [
+      "transparency",
+      "law"
+    ],
+    "website": "https://saln.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 20
+  },
+  {
+    "id": "bg-govchain",
+    "name": "OpenGovChain",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Blockchain-backed open standards for contracting, infrastructure and national budget data.",
+    "sectors": [
+      "transparency",
+      "infra"
+    ],
+    "website": "https://govchain.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 21
+  },
+  {
+    "id": "bg-prices",
+    "name": "Price Guides",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "Essential economic indicators: market prices, fuel prices, exchange rates and related public data.",
+    "sectors": [
+      "business",
+      "agri"
+    ],
+    "website": "https://price-guides.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 22
+  },
+  {
+    "id": "bg-quiz",
+    "name": "Philippine Quiz",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Community & learning",
+    "description": "Test your knowledge of Philippine history, culture, government and geography.",
+    "sectors": [
+      "education"
+    ],
+    "website": "https://quiz.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 23
+  },
+  {
+    "id": "bg-taxdir",
+    "name": "TaxDirectory",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "A Philippine tax directory with calculators for common tax scenarios.",
+    "sectors": [
+      "taxes"
+    ],
+    "website": "https://taxdirectory.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 24
+  },
+  {
+    "id": "bg-hotlines",
+    "name": "Hotlines",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Public services",
+    "description": "Emergency contact numbers from across the Philippines in one directory.",
+    "sectors": [
+      "safety",
+      "disaster"
+    ],
+    "website": "https://hotlines.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 25
+  },
+  {
+    "id": "bg-congressapi",
+    "name": "Open Congress API",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Law & governance",
+    "description": "Structured access to congressional documents, bill statuses and representative information.",
+    "sectors": [
+      "law",
+      "elections"
+    ],
+    "website": "https://open-congress-api.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 26
+  },
+  {
+    "id": "bg-budget2026",
+    "name": "2026 Budget Analysis",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "An independent analysis of the 2026 Philippine national budget.",
+    "sectors": [
+      "transparency",
+      "taxes"
+    ],
+    "website": "https://2026-budget.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 27
+  },
+  {
+    "id": "bg-flood",
+    "name": "Flood Control Browser",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Explore public flood-control project records across the Philippines.",
+    "sectors": [
+      "infra",
+      "disaster",
+      "transparency"
+    ],
+    "website": "https://bettergov.ph/flood-control-projects",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 28
+  },
+  {
+    "id": "bg-philgeps",
+    "name": "PhilGEPS Browser",
+    "type": "project",
+    "maker": "bettergov",
+    "org": "BetterGov.ph",
+    "area": "Data & transparency",
+    "description": "Browse government procurement opportunities and records.",
+    "sectors": [
+      "transparency",
+      "business"
+    ],
+    "website": "https://philgeps.bettergov.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": "2026-11-10",
+    "source": "about.bettergov.ph/projects",
+    "order": 29
+  },
+  {
+    "id": "aer",
+    "name": "Action for Economic Reforms",
+    "type": "cso",
+    "org": "AER",
+    "description": "Policy think tank working on fiscal policy, tax reform and industrial policy.",
+    "sectors": [
+      "taxes",
+      "business"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "altmobility",
+    "name": "AltMobility PH",
+    "type": "cso",
+    "description": "Coalition advocating for walking, cycling and other active and sustainable transport.",
+    "sectors": [
+      "infra"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "bantaykita",
+    "name": "Bantay Kita",
+    "type": "cso",
+    "description": "Coalition pushing for transparency and accountability in the extractive industries.",
+    "sectors": [
+      "transparency",
+      "agri"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "code4pilipinas",
+    "name": "Code for Pilipinas",
+    "type": "cso",
+    "description": "Volunteer civic tech community that runs hackathons and builds open tools with government and civil society partners.",
+    "sectors": [
+      "govservices",
+      "transparency"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "codengo",
+    "name": "CODE-NGO",
+    "type": "cso",
+    "org": "Caucus of Development NGO Networks",
+    "description": "Umbrella network of development NGO networks working on governance and social development.",
+    "sectors": [
+      "social",
+      "elections"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "ffw",
+    "name": "Federation of Free Workers",
+    "type": "cso",
+    "org": "FFW",
+    "description": "Labor federation representing workers and advocating for labor rights.",
+    "sectors": [
+      "labor"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "flag",
+    "name": "Free Legal Assistance Group",
+    "type": "cso",
+    "org": "FLAG",
+    "description": "Human rights lawyers' group providing free legal assistance and litigation on civil liberties.",
+    "sectors": [
+      "law"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "fdc",
+    "name": "Freedom from Debt Coalition",
+    "type": "cso",
+    "description": "Coalition campaigning on public debt, budget and economic justice issues.",
+    "sectors": [
+      "taxes"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "gk",
+    "name": "Gawad Kalinga",
+    "type": "cso",
+    "description": "Community development movement known for building homes and villages for low-income families.",
+    "sectors": [
+      "social"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "haribon",
+    "name": "Haribon Foundation",
+    "type": "cso",
+    "description": "Conservation organization working on biodiversity, forests and community-based conservation.",
+    "sectors": [
+      "agri"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "lente",
+    "name": "LENTE",
+    "type": "cso",
+    "org": "Legal Network for Truthful Elections",
+    "description": "Lawyers' network that monitors elections and gives legal support on electoral issues.",
+    "sectors": [
+      "elections",
+      "law"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "likhaan",
+    "name": "Likhaan Center for Women's Health",
+    "type": "cso",
+    "description": "Provides reproductive health services and advocacy for women in poor communities.",
+    "sectors": [
+      "health"
+    ],
+    "region": "NCR",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "namfrel",
+    "name": "NAMFREL",
+    "type": "cso",
+    "org": "National Citizens' Movement for Free Elections",
+    "description": "Citizen election watchdog that monitors polls and advocates for clean and credible elections.",
+    "sectors": [
+      "elections"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "pbsp",
+    "name": "Philippine Business for Social Progress",
+    "type": "cso",
+    "org": "PBSP",
+    "description": "Business-led foundation that channels corporate resources into poverty reduction programs.",
+    "sectors": [
+      "business",
+      "social"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "pcij",
+    "name": "Philippine Center for Investigative Journalism",
+    "type": "cso",
+    "org": "PCIJ",
+    "description": "Independent non-profit newsroom doing investigative and data reporting on governance, public funds and accountability.",
+    "sectors": [
+      "transparency",
+      "elections"
+    ],
+    "website": "https://pcij.org/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "redcross",
+    "name": "Philippine Red Cross",
+    "type": "cso",
+    "description": "Humanitarian organization providing disaster response, blood services and first aid training.",
+    "sectors": [
+      "disaster",
+      "health",
+      "safety"
+    ],
+    "website": "https://redcross.org.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "prrm",
+    "name": "Philippine Rural Reconstruction Movement",
+    "type": "cso",
+    "org": "PRRM",
+    "description": "Rural development NGO working with farming and fishing communities.",
+    "sectors": [
+      "agri",
+      "social"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "ppcrv",
+    "name": "PPCRV",
+    "type": "cso",
+    "org": "Parish Pastoral Council for Responsible Voting",
+    "description": "Church-based volunteer network that does voter education and poll watching.",
+    "sectors": [
+      "elections"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "agos",
+    "name": "Project Agos",
+    "type": "project",
+    "org": "Rappler / MovePH",
+    "description": "Crowdsourced platform for disaster reports and calls for help during typhoons and floods.",
+    "sectors": [
+      "disaster"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "noah",
+    "name": "Project NOAH",
+    "type": "project",
+    "org": "UP Resilience Institute / NOAH Center",
+    "description": "Hazard maps and disaster risk information for floods, landslides and storm surges across the Philippines.",
+    "sectors": [
+      "disaster",
+      "agri"
+    ],
+    "website": "https://noah.up.edu.ph/",
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "r2kr",
+    "name": "Right to Know, Right Now! Coalition",
+    "type": "cso",
+    "description": "Coalition advocating for a Freedom of Information law and access to public records.",
+    "sectors": [
+      "transparency"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "tfp",
+    "name": "Teach for the Philippines",
+    "type": "cso",
+    "description": "Places teacher fellows in public schools and works on education leadership.",
+    "sectors": [
+      "education"
+    ],
+    "region": "Nationwide",
+    "status": "active",
+    "verifiedAt": null,
+    "source": "seed"
+  },
+  {
+    "id": "vacc",
+    "name": "Volunteers Against Crime and Corruption",
+    "type": "cso",
+    "org": "VACC",
+    "description": "Citizen group that assists crime victims and campaigns against corruption.",
+    "sectors": [
+      "safety",
+      "law"
+    ],
+    "region": "Nationwide",
+    "status": "unknown",
+    "verifiedAt": null,
+    "source": "seed"
+  }
+]

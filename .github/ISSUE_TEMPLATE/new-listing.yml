@@ -1,0 +1,72 @@
+name: New listing
+description: Suggest a civic tech project or civil society organization for the directory.
+title: "New listing: "
+labels: ["listing"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Name
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Civic tech project
+        - Civil society organization
+    validations:
+      required: true
+  - type: input
+    id: org
+    attributes:
+      label: Run by
+      placeholder: Organization, group or maintainer…
+  - type: textarea
+    id: description
+    attributes:
+      label: What it does
+      description: One or two sentences on who it serves and how.
+    validations:
+      required: true
+  - type: checkboxes
+    id: sectors
+    attributes:
+      label: Sectors
+      options:
+        - label: Disaster & Recovery
+        - label: Social & Welfare
+        - label: Government Services
+        - label: Travel
+        - label: Health
+        - label: Education
+        - label: Business & Economy
+        - label: Taxes & Finance
+        - label: Labor & Employment
+        - label: Law & Justice
+        - label: Elections & Governance
+        - label: Transparency & Procurement
+        - label: Agriculture & Environment
+        - label: Infrastructure & Transport
+        - label: Public Safety
+  - type: input
+    id: website
+    attributes:
+      label: Website or repository
+      placeholder: https://example.org…
+  - type: dropdown
+    id: region
+    attributes:
+      label: Coverage
+      options: [Nationwide, NCR, Luzon, Visayas, Mindanao, BARMM, Local (single LGU)]
+  - type: dropdown
+    id: status
+    attributes:
+      label: Still active?
+      options: ["Yes, active", "No longer maintained", "Not sure"]
+  - type: input
+    id: source
+    attributes:
+      label: How do you know?
+      placeholder: I volunteer there, news article, official site…

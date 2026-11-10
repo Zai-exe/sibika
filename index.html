@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sibika Directory</title>
+<meta name="description" content="An open directory of Philippine civic tech projects and civil society organizations across 15 sectors.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='11' fill='%230038a8'/%3E%3Ccircle cx='20' cy='20' r='8' fill='%23f2b705'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1222" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+/* Layout: light civic index. Sun-ray hero with the search front and centre, an icon grid of the 15 sectors,
+   rounded listing cards led by their sector icon, and one deep-navy band to recruit volunteers.
+   Public Sans (a typeface made for public services) for text, Bricolage Grotesque for display, Plex Mono for links. */
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef1f7; --ink:#0e1726; --muted:#596379; --line:#e0e5ee; --line-2:#c9d1df;
+  --blue:#0038a8; --blue-ink:#0038a8; --blue-soft:#e6edfb; --sun:#f2b705; --sun-soft:#fff4cc; --sun-ink:#5c4300;
+  --navy:#0b1d4a; --navy-ink:#ffffff; --navy-muted:#b9c4e0; --navy-line:#24396f;
+  --ok:#0e7a42; --ok-soft:#e1f4e8; --warn:#8a5a00; --warn-soft:#fff1cc; --err:#c4122f;
+  --display:"Bricolage Grotesque","Public Sans",system-ui,sans-serif; --text:"Public Sans",system-ui,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --header-h:64px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1222; --surface:#131b2e; --surface-2:#1a2439; --ink:#e8edf7; --muted:#9ba7bf; --line:#243049; --line-2:#33415f;
+  --blue:#2f63d6; --blue-ink:#8eb1ff; --blue-soft:#18264a; --sun:#f6c22b; --sun-soft:#382c06; --sun-ink:#ffd970;
+  --navy:#08132f; --navy-line:#1f3164; --ok:#6fd49b; --ok-soft:#10301e; --warn:#f2c35a; --warn-soft:#352a09; --err:#ff6f86; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1222; --surface:#131b2e; --surface-2:#1a2439; --ink:#e8edf7; --muted:#9ba7bf; --line:#243049; --line-2:#33415f;
+  --blue:#2f63d6; --blue-ink:#8eb1ff; --blue-soft:#18264a; --sun:#f6c22b; --sun-soft:#382c06; --sun-ink:#ffd970;
+  --navy:#08132f; --navy-line:#1f3164; --ok:#6fd49b; --ok-soft:#10301e; --warn:#f2c35a; --warn-soft:#352a09; --err:#ff6f86; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:rgba(0,56,168,.12)}
+@media (pointer:fine){html{overscroll-behavior:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button,a,input,select,textarea,label{touch-action:manipulation}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.08;margin:0;font-weight:700}
+p{margin:0;text-wrap:pretty}
+a{color:var(--blue-ink)}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ic{width:18px;height:18px;stroke-width:2;flex:none}
+[hidden]{display:none!important}
+[id]{scroll-margin-top:calc(var(--header-h) + env(safe-area-inset-top,0px) + 12px)}
+.skip{position:absolute;left:12px;top:-60px;z-index:20;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:var(--r-sm);font-weight:700;text-decoration:none;transition:top .15s}
+.skip:focus{top:calc(env(safe-area-inset-top,0px) + 10px)}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:saturate(1.4) blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:18px;min-height:var(--header-h);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.brand b{font:800 21px var(--display);letter-spacing:-.02em}
+.brand small{display:block;font-size:12px;color:var(--muted);line-height:1.2}
+nav.main{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+nav.main a{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:999px;color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px;min-height:40px;transition:background-color .15s,color .15s}
+nav.main a:hover{background:var(--surface-2)}
+nav.main a.cta{background:var(--blue);color:#fff}
+nav.main a.cta:hover{background:var(--navy)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:radial-gradient(900px 420px at 100% 0%,var(--sun-soft),transparent 70%),var(--bg);border-bottom:1px solid var(--line)}
+.rays{position:absolute;right:-180px;top:-200px;width:620px;height:620px;opacity:var(--rays-o,.5);pointer-events:none;color:var(--sun)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rays{--rays-o:.18}}
+:root[data-theme="dark"] .rays{--rays-o:.18}
+.hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:48px;padding-block:64px 56px;align-items:end}
+.kicker{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 8px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.kicker .dot{width:22px;height:22px;border-radius:50%;background:var(--sun);display:grid;place-items:center;color:#2b2000}
+.kicker .dot svg{width:13px;height:13px}
+.hero h1{font-size:clamp(38px,6.2vw,70px);letter-spacing:-.035em;font-weight:800;margin-top:18px;max-width:16ch}
+.hero h1 .u{background:linear-gradient(transparent 68%,var(--sun) 68%,var(--sun) 92%,transparent 92%);padding:0 .04em}
+.lede{font-size:18px;color:var(--muted);max-width:56ch;margin-top:16px}
+.search{display:flex;align-items:center;gap:8px;margin-top:26px;background:var(--surface);border:1.5px solid var(--line-2);border-radius:var(--r-md);padding:6px 6px 6px 14px;max-width:620px;box-shadow:0 10px 30px -18px rgba(11,29,74,.35)}
+.search:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft)}
+.search .ic{color:var(--muted)}
+.search input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:500 16px var(--text);padding:10px 4px}
+.search input:focus{outline:none}
+.kinds{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.kind{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px 7px 11px;font:600 14px var(--text);cursor:pointer;min-height:40px;transition:background-color .15s,border-color .15s,color .15s}
+.kind:hover{border-color:var(--blue-ink)}
+.kind[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.kind .ct{font-size:12.5px;font-weight:700;opacity:.65}
+.glance{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;display:grid;gap:14px}
+.glance h2{font-size:15px;font-family:var(--text);font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px}
+.gstats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gstat{background:var(--surface-2);border-radius:var(--r-md);padding:14px;display:grid;gap:4px}
+.gstat .ic{color:var(--blue-ink)}
+.gstat b{font:800 30px var(--display);letter-spacing:-.03em;line-height:1}
+.gstat span{font-size:13px;color:var(--muted);font-weight:600}
+.cov{display:grid;gap:6px;font-size:13.5px;color:var(--muted);font-weight:600}
+.cov .bar{display:grid;grid-template-columns:repeat(15,1fr);gap:3px}
+.cov .bar i{height:10px;border-radius:3px;background:var(--line)}
+.cov .bar i.on{background:var(--sun)}
+
+/* sections */
+section.block{padding-block:64px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.head h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.03em}
+.head p{color:var(--muted);max-width:62ch;margin-top:8px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--blue-ink);margin-bottom:10px}
+
+.sectors{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.sector{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;cursor:pointer;text-align:left;font:inherit;color:inherit;min-height:60px;transition:border-color .15s,background-color .15s,transform .15s}
+.sector:hover{border-color:var(--blue-ink);transform:translateY(-1px)}
+.sector .tile{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--blue-soft);color:var(--blue-ink)}
+.sector .nm{font-weight:600;font-size:14px;line-height:1.25}
+.sector .ct{font:700 13px var(--text);color:var(--muted)}
+.sector.empty .tile{background:var(--surface-2);color:var(--muted)}
+.sector.empty .ct{color:var(--err)}
+.sector[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.sector[aria-pressed="true"] .tile{background:var(--sun);color:#2b2000}
+.sector[aria-pressed="true"] .ct{color:#fff}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+select,input[type=text],input[type=url],textarea{font:500 15px var(--text);color:var(--ink);background-color:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:9px 12px;min-height:44px;width:100%}
+select:focus-visible,input[type=text]:focus-visible,input[type=url]:focus-visible,textarea:focus-visible{outline:3px solid var(--blue-soft);border-color:var(--blue);outline-offset:0}
+.toolbar select{width:auto}
+.toolbar .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border-radius:999px;padding:4px 4px 4px 12px;font-weight:600;font-size:13.5px;min-height:36px}
+.chip button{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;cursor:pointer}
+.chip button:hover{background:rgba(255,255,255,.32)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:var(--r-sm);border:1px solid var(--blue);background:var(--blue);color:#fff;font:700 14.5px var(--text);text-decoration:none;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s,transform .1s}
+.btn:hover{background:var(--navy);border-color:var(--navy)}
+.btn:active{transform:translateY(1px)}
+.btn-line{background:var(--surface);color:var(--ink);border-color:var(--line-2)}
+.btn-line:hover{background:var(--surface-2);border-color:var(--ink);color:var(--ink)}
+.btn[disabled]{opacity:.6;cursor:progress}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0;content-visibility:auto;contain-intrinsic-size:auto 300px;transition:border-color .15s,box-shadow .2s}
+.card:hover{border-color:var(--line-2);box-shadow:0 16px 30px -22px rgba(11,29,74,.45)}
+.ctop{display:flex;gap:12px;align-items:flex-start}
+.ctile{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--blue-soft);color:var(--blue-ink)}
+.ctile .ic{width:22px;height:22px}
+.ctop .t{min-width:0;flex:1}
+.card h3{font-size:20px;letter-spacing:-.02em;overflow-wrap:anywhere}
+.card .org{font-size:13.5px;color:var(--muted);margin-top:2px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 9px 3px 7px;border-radius:999px;line-height:1.5}
+.badge .ic{width:13px;height:13px}
+.b-bg{background:var(--sun-soft);color:var(--sun-ink)}
+.b-cso{background:var(--surface-2);color:var(--ink)}
+.b-proj{background:var(--blue-soft);color:var(--blue-ink)}
+.s-active{background:var(--ok-soft);color:var(--ok)}
+.s-dormant,.s-unknown{background:var(--surface-2);color:var(--muted)}
+.desc{font-size:15px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font:600 12.5px var(--text);color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:4px 10px 4px 8px;cursor:pointer;min-height:30px;transition:border-color .15s,background-color .15s}
+.tag:hover{border-color:var(--blue-ink);background:var(--blue-soft)}
+.tag .ic{width:13px;height:13px;color:var(--muted)}
+.cfoot{margin-top:auto;display:grid;gap:8px;padding-top:12px;border-top:1px solid var(--line);font-size:13px}
+.cfoot .r{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0}
+.cfoot .loc{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-weight:600}
+.cfoot .loc .ic,.vf .ic,.uv .ic{width:15px;height:15px}
+.vf{display:inline-flex;align-items:center;gap:5px;color:var(--ok);font-weight:600}
+.uv{display:inline-flex;align-items:center;gap:5px;color:var(--warn);font-weight:600}
+.link{display:inline-flex;align-items:center;gap:6px;font:500 13px var(--mono);color:var(--blue-ink);text-decoration:none;min-width:0}
+.link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.link:hover span{text-decoration:underline}
+.link .ic{width:15px;height:15px}
+.nolink{color:var(--muted);font-weight:600}
+
+.state{grid-column:1/-1;display:grid;justify-items:center;gap:8px;background:var(--surface);border:1px dashed var(--line-2);border-radius:var(--r-lg);padding:40px 20px;text-align:center;color:var(--muted)}
+.state .ic{width:30px;height:30px;color:var(--blue-ink)}
+.state strong{color:var(--ink);font:700 20px var(--display)}
+.state .btn{margin-top:8px}
+.skel{height:280px;border-radius:var(--r-lg);border:1px solid var(--line);background:linear-gradient(90deg,var(--surface) 0%,var(--surface-2) 50%,var(--surface) 100%);background-size:200% 100%;animation:sh 1.4s infinite linear}
+@keyframes sh{to{background-position:-200% 0}}
+
+/* submit */
+.two{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:32px;align-items:start}
+form.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;display:grid;gap:18px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.field legend{font-weight:700;font-size:14px}
+.hint{font-size:12.5px;color:var(--muted)}
+.err{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--err)}
+.err .ic{width:15px;height:15px}
+[aria-invalid="true"]{border-color:var(--err)!important}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px;margin-top:6px}
+.opts label{display:flex;gap:9px;align-items:center;font-weight:500;font-size:13.5px;padding:9px 10px;border:1px solid var(--line);border-radius:var(--r-sm);cursor:pointer;background:var(--surface);min-height:44px;transition:border-color .15s,background-color .15s}
+.opts label:hover{border-color:var(--line-2)}
+.opts label:has(input:checked){border-color:var(--blue);background:var(--blue-soft)}
+.opts input{accent-color:var(--blue);width:16px;height:16px;margin:0;flex:none}
+.opts .ic{width:16px;height:16px;color:var(--muted)}
+.opts.big{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.opts.big label{font-weight:700;font-size:14.5px}
+textarea{min-height:100px;resize:vertical}
+.msg{display:flex;gap:10px;align-items:flex-start;border-radius:var(--r-sm);padding:12px 14px;font-weight:600;font-size:14px}
+.msg .ic{margin-top:2px}
+.ok-msg{background:var(--ok-soft);color:var(--ok)}
+.err-msg{background:var(--warn-soft);color:var(--warn)}
+.side{display:grid;gap:14px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px}
+.note h3{display:flex;align-items:center;gap:9px;font-size:18px;margin-bottom:12px}
+.note h3 .ic{color:var(--blue-ink)}
+.note ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;font-size:14.5px;color:var(--muted)}
+.note li{display:grid;grid-template-columns:18px minmax(0,1fr);gap:9px}
+.note li .ic{width:16px;height:16px;margin-top:3px;color:var(--ok)}
+.note b{color:var(--ink)}
+
+/* review */
+.queue{display:grid;gap:10px}
+.qitem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
+.qitem h3{font-size:17px;margin:8px 0 4px}
+.qitem p{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.qitem .acts{display:flex;gap:8px;flex-wrap:wrap}
+.qitem.undo{background:var(--surface-2)}
+
+/* join */
+.join{background:var(--navy);color:var(--navy-ink)}
+.join .head p{color:var(--navy-muted)}
+.join .eyebrow{color:var(--sun)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.step{border:1px solid var(--navy-line);border-radius:var(--r-lg);padding:20px;display:grid;gap:8px;align-content:start}
+.step .top{display:flex;align-items:center;justify-content:space-between}
+.step .tile{width:40px;height:40px;border-radius:11px;background:rgba(242,183,5,.16);color:var(--sun);display:grid;place-items:center}
+.step .n{font:700 13px var(--mono);color:var(--navy-muted)}
+.step h3{font-size:19px}
+.step p{color:var(--navy-muted);font-size:14.5px}
+.join .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.join .btn{background:var(--sun);border-color:var(--sun);color:#2b2000}
+.join .btn:hover{background:#ffd23f;border-color:#ffd23f}
+.join .btn-line{background:transparent;color:#fff;border-color:var(--navy-line)}
+.join .btn-line:hover{background:rgba(255,255,255,.08);border-color:#fff;color:#fff}
+footer{background:var(--navy);color:var(--navy-muted);border-top:1px solid var(--navy-line);font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:22px}
+
+@media (max-width:900px){
+  .hero .wrap,.two{grid-template-columns:minmax(0,1fr)}
+  .hero .wrap{padding-block:40px;gap:28px}
+  nav.main{margin-left:0;width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px}
+  nav.main a{white-space:nowrap}
+  .fr{grid-template-columns:1fr}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .toolbar .count{margin-left:0;width:100%}
+  .qitem{grid-template-columns:minmax(0,1fr)}
+  section.block{padding-block:48px}
+  .rays{right:-300px;top:-260px}
+}
+body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+.foot-links{display:flex;gap:16px;flex-wrap:wrap}
+footer a{color:var(--navy-ink);display:inline-flex;align-items:center;gap:6px}
+footer a .ic{width:15px;height:15px}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#directory">Skip to Directory</a>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="#top" aria-label="Sibika Directory, back to top">
+    <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="11" fill="#0038a8"/><g transform="translate(20 20)" fill="#f2b705"><circle r="6.2"/><g id="ray"><rect x="-1.4" y="-15.5" width="2.8" height="6" rx="1.4"/></g><use href="#ray" transform="rotate(45)"/><use href="#ray" transform="rotate(90)"/><use href="#ray" transform="rotate(135)"/><use href="#ray" transform="rotate(180)"/><use href="#ray" transform="rotate(225)"/><use href="#ray" transform="rotate(270)"/><use href="#ray" transform="rotate(315)"/></g></svg>
+    <span><b translate="no">Sibika</b><small>Civic tech &amp; CSO directory</small></span>
+  </a>
+  <nav class="main" aria-label="Main">
+    <a href="#directory"><i data-lucide="layout-grid" class="ic" aria-hidden="true"></i>Directory</a>
+    <a href="#sectors"><i data-lucide="shapes" class="ic" aria-hidden="true"></i>Sectors</a>
+    <a href="https://github.com/Zai-exe/sibika" target="_blank" rel="noopener noreferrer"><i data-lucide="code" class="ic" aria-hidden="true"></i>GitHub</a>
+    <a href="#join"><i data-lucide="hand-heart" class="ic" aria-hidden="true"></i>Volunteer</a>
+    <a href="#submit" class="cta"><i data-lucide="plus" class="ic" aria-hidden="true"></i>Submit a Listing</a>
+  </nav>
+</div></header>
+
+<main>
+<section class="hero" id="top">
+  <svg class="rays" viewBox="-100 -100 200 200" aria-hidden="true"><g fill="currentColor"><circle r="22" opacity=".55"/><g id="hray"><path d="M-4 -34 L4 -34 L1.5 -96 L-1.5 -96 Z" opacity=".35"/></g><use href="#hray" transform="rotate(22.5)"/><use href="#hray" transform="rotate(45)"/><use href="#hray" transform="rotate(67.5)"/><use href="#hray" transform="rotate(90)"/><use href="#hray" transform="rotate(112.5)"/><use href="#hray" transform="rotate(135)"/><use href="#hray" transform="rotate(157.5)"/><use href="#hray" transform="rotate(180)"/><use href="#hray" transform="rotate(202.5)"/><use href="#hray" transform="rotate(225)"/><use href="#hray" transform="rotate(247.5)"/><use href="#hray" transform="rotate(270)"/><use href="#hray" transform="rotate(292.5)"/><use href="#hray" transform="rotate(315)"/><use href="#hray" transform="rotate(337.5)"/></g></svg>
+  <div class="wrap">
+    <div>
+      <span class="kicker"><span class="dot"><i data-lucide="megaphone" aria-hidden="true"></i></span>Call for volunteers is open</span>
+      <h1>Every civic project in the Philippines, <span class="u">in one place.</span></h1>
+      <p class="lede">Find civic tech tools and civil society organizations across 15 sectors, from disaster response to procurement watchdogs. Add the ones that are missing.</p>
+      <form class="search" role="search" id="searchForm">
+        <i data-lucide="search" class="ic" aria-hidden="true"></i>
+        <label for="q" class="sr">Search the directory</label>
+        <input id="q" name="q" type="search" placeholder="Try “flood”, “budget” or “Mindanao”…" autocomplete="off" spellcheck="false">
+        <button class="btn" type="submit">Search</button>
+      </form>
+      <div class="kinds" role="group" aria-label="Show">
+        <button type="button" class="kind" data-t="all" aria-pressed="true"><i data-lucide="layers" class="ic" aria-hidden="true"></i>All<span class="ct num" data-c="all"></span></button>
+        <button type="button" class="kind" data-t="project" aria-pressed="false"><i data-lucide="code-xml" class="ic" aria-hidden="true"></i>Civic Tech<span class="ct num" data-c="project"></span></button>
+        <button type="button" class="kind" data-t="cso" aria-pressed="false"><i data-lucide="users" class="ic" aria-hidden="true"></i>CSOs<span class="ct num" data-c="cso"></span></button>
+        <button type="button" class="kind" data-t="bettergov" aria-pressed="false"><i data-lucide="hammer" class="ic" aria-hidden="true"></i><span translate="no">BetterGov</span>&nbsp;Creations<span class="ct num" data-c="bettergov"></span></button>
+      </div>
+    </div>
+    <aside class="glance" aria-labelledby="glanceH">
+      <h2 id="glanceH"><i data-lucide="chart-no-axes-column" class="ic" aria-hidden="true"></i>Directory at a Glance</h2>
+      <div class="gstats">
+        <div class="gstat"><i data-lucide="code-xml" class="ic" aria-hidden="true"></i><b class="num" id="st-proj">–</b><span>Civic tech projects</span></div>
+        <div class="gstat"><i data-lucide="users" class="ic" aria-hidden="true"></i><b class="num" id="st-cso">–</b><span>Civil society orgs</span></div>
+        <div class="gstat"><i data-lucide="badge-check" class="ic" aria-hidden="true"></i><b class="num" id="st-ver">–</b><span>Verified entries</span></div>
+        <div class="gstat" id="st-gap-wrap"><i data-lucide="circle-dashed" class="ic" aria-hidden="true"></i><b class="num" id="st-gap">–</b><span>Sectors with no entries</span></div>
+      </div>
+      <div class="cov"><span><span class="num" id="st-cov">0</span> of 15 sectors covered</span><div class="bar" id="covBar" aria-hidden="true"></div></div>
+    </aside>
+  </div>
+</section>
+
+<section class="block" id="sectors"><div class="wrap">
+  <div class="head"><div><span class="eyebrow"><i data-lucide="shapes" class="ic" aria-hidden="true"></i>Sectors</span><h2>Browse by Sector</h2><p>Most entries belong to more than one sector. Pick one to filter the directory, and pick it again to clear it.</p></div></div>
+  <div class="sectors" id="sectorGrid"></div>
+</div></section>
+
+<section class="block" id="directory" style="padding-top:0"><div class="wrap">
+  <div class="head"><div><span class="eyebrow"><i data-lucide="layout-grid" class="ic" aria-hidden="true"></i>Directory</span><h2>Projects &amp; Organizations</h2><p><span translate="no">BetterGov</span> creations come from their public projects list. Other starter entries say “Needs verification” until a volunteer checks them.</p></div></div>
+  <div class="toolbar">
+    <span id="activeSector"></span>
+    <label for="fStatus" class="sr">Status</label>
+    <select id="fStatus" name="status"><option value="">Any status</option><option value="active">Active</option><option value="dormant">Dormant</option><option value="unknown">Status unknown</option></select>
+    <label for="fVer" class="sr">Verification</label>
+    <select id="fVer" name="verified"><option value="">Verified or not</option><option value="yes">Verified only</option><option value="no">Needs verification</option></select>
+    <button type="button" class="btn btn-line" id="clearAll" hidden><i data-lucide="x" class="ic" aria-hidden="true"></i>Clear Filters</button>
+    <span class="count num" id="count" aria-live="polite"></span>
+  </div>
+  <div id="results" class="grid" aria-busy="true"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+</div></section>
+
+<section class="block" id="submit" style="padding-top:0"><div class="wrap">
+  <div class="head"><div><span class="eyebrow"><i data-lucide="plus" class="ic" aria-hidden="true"></i>Submit</span><h2>Add a Missing Listing</h2><p>Know a project or organization that belongs here? Fill this in and it opens as a pre-filled GitHub issue. A volunteer moderator checks it before it goes live.</p></div></div>
+  <div class="two">
+    <form class="panel" id="subForm" novalidate>
+      <fieldset class="field">
+        <legend>What are you adding?</legend>
+        <div class="opts big">
+          <label for="ty-p"><input type="radio" name="type" id="ty-p" value="project" checked><i data-lucide="code-xml" class="ic" aria-hidden="true"></i>Civic tech project</label>
+          <label for="ty-c"><input type="radio" name="type" id="ty-c" value="cso"><i data-lucide="users" class="ic" aria-hidden="true"></i>Civil society organization</label>
+        </div>
+      </fieldset>
+      <div class="fr">
+        <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Bayanihan Map…" aria-describedby="e-name"><span class="err" id="e-name" hidden></span></div>
+        <div class="field"><label for="f-org">Run by</label><input id="f-org" name="org" type="text" maxlength="120" autocomplete="off" placeholder="Organization, group or maintainer…"></div>
+      </div>
+      <div class="field"><label for="f-desc">What it does</label><textarea id="f-desc" name="description" maxlength="500" placeholder="One or two sentences on who it serves and how…" aria-describedby="descCt e-desc"></textarea><span class="hint"><span class="num" id="descCt">0</span>/500 characters</span><span class="err" id="e-desc" hidden></span></div>
+      <fieldset class="field" aria-describedby="e-sec">
+        <legend>Sectors</legend><span class="hint">Choose all that apply.</span>
+        <div class="opts" id="sectorChecks"></div>
+        <span class="err" id="e-sec" hidden></span>
+      </fieldset>
+      <div class="fr">
+        <div class="field"><label for="f-url">Website or repository</label><input id="f-url" name="website" type="url" maxlength="300" placeholder="https://example.org…" inputmode="url" autocomplete="url" spellcheck="false" aria-describedby="e-url"><span class="err" id="e-url" hidden></span></div>
+        <div class="field"><label for="f-region">Coverage</label>
+          <select id="f-region" name="region"><option>Nationwide</option><option>NCR</option><option>Luzon</option><option>Visayas</option><option>Mindanao</option><option>BARMM</option><option>Local (single LGU)</option></select></div>
+      </div>
+      <div class="fr">
+        <div class="field"><label for="f-status">Is it still active?</label>
+          <select id="f-status" name="activity"><option value="active">Yes, active</option><option value="dormant">No longer maintained</option><option value="unknown">Not sure</option></select></div>
+        <div class="field"><label for="f-src">How do you know?</label><input id="f-src" name="source" type="text" maxlength="200" autocomplete="off" placeholder="I volunteer there, news article…"></div>
+      </div>
+      <div id="formMsg" aria-live="polite"></div>
+      <div><button class="btn" type="submit" id="subBtn"><i data-lucide="send" class="ic" aria-hidden="true"></i><span>Continue on GitHub</span></button></div>
+      <p class="hint">You’ll need a free GitHub account to post the issue. Comfortable with code? Edit <a href="https://github.com/Zai-exe/sibika/blob/main/data/listings.json" target="_blank" rel="noopener noreferrer"><code>data/listings.json</code></a> and open a pull request instead.</p>
+    </form>
+    <div class="side">
+      <div class="note"><h3><i data-lucide="list-checks" class="ic" aria-hidden="true"></i>What Gets Listed</h3><ul>
+        <li><i data-lucide="check" class="ic" aria-hidden="true"></i><span><b>Civic tech:</b> tools, apps, data portals or bots that help citizens use, watch or improve public services.</span></li>
+        <li><i data-lucide="check" class="ic" aria-hidden="true"></i><span><b>CSOs:</b> non-government, non-profit groups working on a public issue in the Philippines.</span></li>
+        <li><i data-lucide="check" class="ic" aria-hidden="true"></i><span>It must be findable: a site, repository, page or registration.</span></li>
+        <li><i data-lucide="check" class="ic" aria-hidden="true"></i><span>Dormant projects stay listed and are marked dormant, so the work isn’t lost.</span></li></ul></div>
+      <div class="note"><h3><i data-lucide="route" class="ic" aria-hidden="true"></i>What Happens Next</h3><ul>
+        <li><i data-lucide="inbox" class="ic" aria-hidden="true"></i><span>Your entry becomes a GitHub issue labelled <b>listing</b>.</span></li>
+        <li><i data-lucide="search-check" class="ic" aria-hidden="true"></i><span>A moderator checks the link and the details.</span></li>
+        <li><i data-lucide="badge-check" class="ic" aria-hidden="true"></i><span>Once approved, it’s added to the data file and appears here with a verified date.</span></li></ul></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="block join" id="join"><div class="wrap">
+  <div class="head"><div><span class="eyebrow"><i data-lucide="hand-heart" class="ic" aria-hidden="true"></i>Volunteer</span><h2>Help Map It</h2><p>The site is the easy part. The directory stays useful only if people keep it accurate. You can help in four steps.</p></div></div>
+  <div class="steps">
+    <div class="step"><div class="top"><span class="tile"><i data-lucide="shapes" class="ic" aria-hidden="true"></i></span><span class="n">01</span></div><h3>Pick a Sector</h3><p>Start with one that has no entries or only a few.</p></div>
+    <div class="step"><div class="top"><span class="tile"><i data-lucide="telescope" class="ic" aria-hidden="true"></i></span><span class="n">02</span></div><h3>Find What Exists</h3><p>Hackathon winners, LGU tools, foundation grantees, campus projects, local CSOs.</p></div>
+    <div class="step"><div class="top"><span class="tile"><i data-lucide="send" class="ic" aria-hidden="true"></i></span><span class="n">03</span></div><h3>Submit It Here</h3><p>One entry per project or organization, with a link a moderator can check.</p></div>
+    <div class="step"><div class="top"><span class="tile"><i data-lucide="badge-check" class="ic" aria-hidden="true"></i></span><span class="n">04</span></div><h3>Verify the Rest</h3><p>Confirm starter entries still exist and note the date you checked.</p></div>
+  </div>
+  <div class="ctas"><a class="btn" href="#submit"><i data-lucide="plus" class="ic" aria-hidden="true"></i>Submit a Listing</a><a class="btn btn-line" href="#sectors"><i data-lucide="circle-dashed" class="ic" aria-hidden="true"></i>See Empty Sectors</a></div>
+</div></section>
+</main>
+
+<footer><div class="wrap"><span><span translate="no">Sibika</span> Directory · community project · not an official government website</span>
+  <span class="foot-links"><a href="https://github.com/Zai-exe/sibika" target="_blank" rel="noopener noreferrer"><i data-lucide="code" class="ic" aria-hidden="true"></i>Source on GitHub</a><a href="data/listings.json"><i data-lucide="file-json" class="ic" aria-hidden="true"></i>Download the data</a></span></div></footer>
+
+<script>
+const SECTORS=[
+ ["disaster","Disaster & Recovery","cloud-lightning"],["social","Social & Welfare","hand-heart"],["govservices","Government Services","landmark"],
+ ["travel","Travel","plane"],["health","Health","heart-pulse"],["education","Education","graduation-cap"],["business","Business & Economy","briefcase-business"],
+ ["taxes","Taxes & Finance","receipt"],["labor","Labor & Employment","hard-hat"],["law","Law & Justice","scale"],
+ ["elections","Elections & Governance","vote"],["transparency","Transparency & Procurement","file-search"],
+ ["agri","Agriculture & Environment","sprout"],["infra","Infrastructure & Transport","construction"],["safety","Public Safety","shield-check"]];
+const SNAME=Object.fromEntries(SECTORS.map(s=>[s[0],s[1]])),SICON=Object.fromEntries(SECTORS.map(s=>[s[0],s[2]]));
+const STATUS={active:"Active",dormant:"Dormant",unknown:"Status unknown"};
+const KIND_HASH={"civic-tech":"project","csos":"cso","bettergov-creations":"bettergov"};
+const fmtDate=new Intl.DateTimeFormat("en-PH",{year:"numeric",month:"short",day:"numeric"});
+const fmtNum=new Intl.NumberFormat("en-PH");
+const $=id=>document.getElementById(id);
+const REPO="https://github.com/Zai-exe/sibika";
+const st={type:"all",sector:"",status:"",ver:"",q:"",listings:null,loadErr:""};
+let formDirty=false;
+
+function el(tag,attrs={},...kids){const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs)){if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v)}for(const k of kids.flat()){if(k==null||k==="")continue;e.append(k.nodeType?k:String(k))}return e}
+const icon=(n,cls="ic")=>el("i",{"data-lucide":n,class:cls,"aria-hidden":"true"});
+function paintIcons(){try{window.lucide&&window.lucide.createIcons({attrs:{"aria-hidden":"true"}})}catch{}}
+function safeUrl(u){try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:null}catch{return null}}
+function host(u){try{const x=new URL(u);return (x.host+x.pathname).replace(/^www\./,"").replace(/\/$/,"")}catch{return u}}
+function fmtD(v){if(!v)return"";const d=new Date(String(v).length===10?v+"T00:00:00":v);return isNaN(d)?String(v):fmtDate.format(d)}
+const isBG=l=>l.maker==="bettergov";
+const kindOk=l=>st.type==="all"||(st.type==="bettergov"?isBG(l):l.type===st.type);
+
+/* sectors */
+function renderSectors(){
+  const counts={};(st.listings||[]).filter(kindOk).forEach(l=>(l.sectors||[]).forEach(s=>counts[s]=(counts[s]||0)+1));
+  const g=$("sectorGrid");g.replaceChildren();
+  SECTORS.forEach(([k,n,ic])=>{const c=counts[k]||0;
+    g.append(el("button",{type:"button",class:"sector"+(st.listings&&!c?" empty":""),"aria-pressed":String(st.sector===k),"aria-label":n+", "+c+(c===1?" entry":" entries"),onclick:()=>setSector(st.sector===k?"":k,true)},
+      el("span",{class:"tile"},icon(ic)),el("span",{class:"nm"},n),el("span",{class:"ct num"},st.listings?fmtNum.format(c):"…")))});
+  paintIcons();
+}
+function buildChecks(){const c=$("sectorChecks");SECTORS.forEach(([k,n,ic])=>c.append(el("label",{for:"sc-"+k},el("input",{type:"checkbox",id:"sc-"+k,name:"sectors",value:k}),icon(ic),n)))}
+function syncHash(){const h=st.sector||Object.keys(KIND_HASH).find(k=>KIND_HASH[k]===st.type)||"";try{history.replaceState(null,"",h?"#"+h:location.pathname+location.search)}catch{}}
+function setSector(k,scroll){st.sector=k;syncHash();renderSectors();renderResults();if(scroll)$("directory").scrollIntoView({block:"start"})}
+
+/* results */
+function filtered(){const q=st.q.trim().toLowerCase();
+  return (st.listings||[]).filter(l=>kindOk(l)&&(!st.sector||(l.sectors||[]).includes(st.sector))&&(!st.status||l.status===st.status)
+    &&(!st.ver||(st.ver==="yes"?!!l.verifiedAt:!l.verifiedAt))
+    &&(!q||[l.name,l.org,l.description,l.region,l.area,l.website,...(l.sectors||[]).map(s=>SNAME[s])].join(" ").toLowerCase().includes(q)))
+   .sort((a,b)=>(isBG(b)-isBG(a))||((a.order??999)-(b.order??999))||String(a.name).localeCompare(String(b.name)))}
+function card(l){const url=safeUrl(l.website||"");const secs=(l.sectors||[]).filter(s=>SNAME[s]);
+  const kind=isBG(l)?el("span",{class:"badge b-bg"},icon("hammer"),el("span",{translate:"no"},"BetterGov")):l.type==="cso"?el("span",{class:"badge b-cso"},icon("users"),"CSO"):el("span",{class:"badge b-proj"},icon("code-xml"),"Civic tech");
+  return el("article",{class:"card"},
+    el("div",{class:"ctop"},el("span",{class:"ctile"},icon(SICON[secs[0]]||"circle-dot")),
+      el("div",{class:"t"},el("h3",{},l.name||"Untitled"),l.org&&l.org!==l.name?el("p",{class:"org"},l.org):null)),
+    el("div",{class:"badges"},kind,el("span",{class:"badge s-"+(STATUS[l.status]?l.status:"unknown")},icon(l.status==="active"?"activity":l.status==="dormant"?"moon":"circle-help"),STATUS[l.status]||"Status unknown")),
+    l.description?el("p",{class:"desc"},l.description):el("p",{class:"desc nolink"},"No description yet."),
+    secs.length?el("div",{class:"tags"},secs.map(s=>el("button",{type:"button",class:"tag",onclick:()=>setSector(s,false)},icon(SICON[s]),SNAME[s]))):null,
+    el("div",{class:"cfoot"},
+      el("div",{class:"r"},el("span",{class:"loc"},icon("map-pin"),l.region||"Coverage not set"),
+        l.verifiedAt?el("span",{class:"vf"},icon("badge-check"),"Verified "+fmtD(l.verifiedAt)):el("span",{class:"uv"},icon("clock"),"Needs verification")),
+      el("div",{class:"r"},url?el("a",{class:"link",href:url,target:"_blank",rel:"noopener noreferrer",translate:"no","aria-label":"Visit "+(l.name||"site")+" (opens in a new tab)"},el("span",{},host(url)),icon("arrow-up-right")):el("span",{class:"nolink"},"No link yet"))))}
+function stateBox(ic,title,text,action){return el("div",{class:"state"},icon(ic),el("strong",{},title),el("p",{},text),action||null)}
+function renderResults(){const r=$("results");
+  $("clearAll").hidden=!(st.sector||st.status||st.ver||st.q||st.type!=="all");
+  $("activeSector").replaceChildren(st.sector?el("span",{class:"chip"},SNAME[st.sector],el("button",{type:"button","aria-label":"Clear sector filter",onclick:()=>setSector("",false)},icon("x"))):"");
+  if(st.loadErr){r.setAttribute("aria-busy","false");r.replaceChildren(stateBox("cloud-off","The Directory Couldn’t Load",st.loadErr));$("count").textContent="";paintIcons();return}
+  if(!st.listings)return;
+  r.setAttribute("aria-busy","false");
+  const list=filtered();
+  $("count").textContent="Showing "+fmtNum.format(list.length)+(list.length===1?" entry":" entries");
+  if(!st.listings.length){r.replaceChildren(stateBox("folder-open","No Listings Yet","Approved entries will appear here.",el("a",{class:"btn",href:"#submit"},icon("plus"),"Submit the First One")));paintIcons();return}
+  if(!list.length){r.replaceChildren(st.sector?stateBox(SICON[st.sector],"Nothing in "+SNAME[st.sector]+" Yet","This sector still needs researchers. Know a project or CSO that belongs here?",
+      el("a",{class:"btn",href:"#submit",onclick:()=>{const c=$("sc-"+st.sector);if(c)c.checked=true}},icon("plus"),"Add One for This Sector"))
+    :stateBox("search-x","No Matches","Try a different search, or clear the filters.",el("button",{class:"btn btn-line",type:"button",onclick:clearAll},icon("x"),"Clear Filters")));paintIcons();return}
+  r.replaceChildren(...list.map(card));paintIcons();
+}
+function renderStats(){const L=st.listings||[];const f=n=>fmtNum.format(n);
+  $("st-proj").textContent=f(L.filter(l=>l.type==="project").length);$("st-cso").textContent=f(L.filter(l=>l.type==="cso").length);
+  $("st-ver").textContent=f(L.filter(l=>l.verifiedAt).length);
+  const cov=new Set(L.flatMap(l=>l.sectors||[]).filter(s=>SNAME[s]));$("st-cov").textContent=cov.size;$("st-gap").textContent=15-cov.size;
+  $("covBar").replaceChildren(...SECTORS.map(s=>el("i",{class:cov.has(s[0])?"on":""})));
+  const c={all:L.length,project:L.filter(l=>l.type==="project").length,cso:L.filter(l=>l.type==="cso").length,bettergov:L.filter(isBG).length};
+  document.querySelectorAll("[data-c]").forEach(s=>s.textContent=st.listings?f(c[s.dataset.c]):"");
+}
+function setType(t){st.type=t;document.querySelectorAll(".kind").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.t===t)));if(!st.sector)syncHash();renderSectors();renderResults()}
+function clearAll(){st.status="";st.ver="";st.q="";$("q").value="";$("fStatus").value="";$("fVer").value="";st.sector="";setType("all");setSector("",false)}
+
+/* submit: build a pre-filled GitHub issue */
+function showErr(id,m,input){const e=$(id);e.replaceChildren(...(m?[icon("circle-alert"),el("span",{},m)]:[]));e.hidden=!m;if(input)input.setAttribute("aria-invalid",m?"true":"false")}
+$("f-desc").addEventListener("input",e=>$("descCt").textContent=e.target.value.length);
+$("subForm").addEventListener("input",()=>formDirty=true);
+window.addEventListener("beforeunload",e=>{if(formDirty){e.preventDefault();e.returnValue=""}});
+$("subForm").addEventListener("submit",e=>{e.preventDefault();const msg=$("formMsg");msg.replaceChildren();
+  const nameI=$("f-name"),descI=$("f-desc"),urlI=$("f-url");
+  const name=nameI.value.trim(),desc=descI.value.trim(),urlRaw=urlI.value.trim();
+  const secs=[...document.querySelectorAll("#sectorChecks input:checked")].map(i=>i.value);
+  const url=urlRaw?safeUrl(/^https?:\/\//.test(urlRaw)?urlRaw:"https://"+urlRaw):"";
+  const errs=[];
+  showErr("e-name",name?"":"Add the project or organization name.",nameI);if(!name)errs.push(nameI);
+  showErr("e-desc",desc.length>=20?"":"Describe it in at least 20 characters so a moderator can check it.",descI);if(desc.length<20)errs.push(descI);
+  showErr("e-sec",secs.length?"":"Pick at least one sector.");if(!secs.length)errs.push($("sc-disaster"));
+  showErr("e-url",urlRaw&&!url?"That doesn’t look like a web address. Use a full link like https://example.org.":"",urlI);if(urlRaw&&!url)errs.push(urlI);
+  paintIcons();
+  if(errs.length){errs[0].focus();return}
+  const type=document.querySelector("input[name=type]:checked").value;
+  const entry={name,type,org:$("f-org").value.trim()||undefined,description:desc,sectors:secs,website:url||undefined,region:$("f-region").value,status:$("f-status").value,verifiedAt:null};
+  const body=["### Name",name,"","### Type",type==="cso"?"Civil society organization":"Civic tech project","","### Run by",entry.org||"_Not given_","",
+    "### What it does",desc,"","### Sectors",secs.map(s=>"- "+SNAME[s]).join("\n"),"","### Website",url||"_Not given_","","### Coverage",entry.region,"",
+    "### Still active?",$("f-status").selectedOptions[0].textContent,"","### How the submitter knows",$("f-src").value.trim()||"_Not given_","",
+    "<details><summary>Entry for data/listings.json</summary>","","```json",JSON.stringify(entry,null,2),"```","</details>"].join("\n");
+  const href=REPO+"/issues/new?labels=listing&title="+encodeURIComponent("New listing: "+name)+"&body="+encodeURIComponent(body);
+  formDirty=false;
+  const win=window.open(href,"_blank");if(win)win.opener=null;
+  msg.append(el("div",{class:"msg ok-msg"},icon("external-link"),el("span",{},win?"GitHub opened in a new tab. Review the issue there and select Submit new issue to send it.":"Your issue is ready. ",win?null:el("a",{href,target:"_blank",rel:"noopener noreferrer"},"Open it on GitHub"))));
+  paintIcons();
+});
+
+/* wiring */
+document.querySelectorAll(".kind").forEach(b=>b.addEventListener("click",()=>setType(b.dataset.t)));
+$("fStatus").addEventListener("change",e=>{st.status=e.target.value;renderResults()});
+$("fVer").addEventListener("change",e=>{st.ver=e.target.value;renderResults()});
+$("q").addEventListener("input",e=>{st.q=e.target.value;renderResults()});
+$("searchForm").addEventListener("submit",e=>{e.preventDefault();st.q=$("q").value;renderResults();$("directory").scrollIntoView({block:"start"})});
+$("clearAll").addEventListener("click",clearAll);
+function readHash(){const h=location.hash.slice(1);if(SNAME[h]){st.sector=h;renderSectors();renderResults()}else if(KIND_HASH[h]){setType(KIND_HASH[h])}}
+window.addEventListener("hashchange",readHash);
+buildChecks();renderSectors();readHash();paintIcons();
+window.addEventListener("load",paintIcons);
+
+/* data */
+(async()=>{
+  try{
+    const res=await fetch("data/listings.json",{cache:"no-cache"});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const rows=await res.json();
+    st.listings=Array.isArray(rows)?rows:[];
+  }catch(err){st.loadErr="The listings file couldn’t load ("+(err.message||err)+"). Check your connection and reload the page."}
+  renderSectors();renderResults();renderStats();
+})();
+</script>
+</body>
+</html>
