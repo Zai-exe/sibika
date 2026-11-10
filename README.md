@@ -36,4 +36,9 @@ Then open http://localhost:8000.
 - **BetterGov creations** come from BetterGov's public projects page and are marked verified as of 10 Nov 2026.
 - **Other starter entries** are marked "Needs verification" until a volunteer confirms them.
 
+## License
+
+- **Code:** [MIT](LICENSE)
+- **Data** (`data/listings.json`): [CC BY 4.0](data/LICENSE.md). Reuse it freely; credit Sibika Directory.
+
 Not an official government website.

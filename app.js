@@ -34,14 +34,36 @@ function renderSectors(){
   paintIcons();
 }
 function buildChecks(){const c=$("sectorChecks");SECTORS.forEach(([k,n,ic])=>c.append(el("label",{for:"sc-"+k},el("input",{type:"checkbox",id:"sc-"+k,name:"sectors",value:k}),icon(ic),n)))}
-function syncHash(){const h=st.sector||Object.keys(KIND_HASH).find(k=>KIND_HASH[k]===st.type)||"";try{history.replaceState(null,"",h?"#"+h:location.pathname+location.search)}catch{}}
-function setSector(k,scroll){st.sector=k;syncHash();renderSectors();renderResults();if(scroll)$("directory").scrollIntoView({block:"start"})}
+/* every filter lives in the link (?sector=health&type=cso&status=active&verified=yes&q=flood) so it can be shared */
+const TYPES_OK=new Set(["all","project","cso","bettergov"]),STATUS_OK=new Set(["","active","dormant","unknown"]),VER_OK=new Set(["","yes","no"]);
+function syncUrl(){try{const p=new URLSearchParams();
+  if(st.sector)p.set("sector",st.sector);if(st.type!=="all")p.set("type",st.type);if(st.status)p.set("status",st.status);if(st.ver)p.set("verified",st.ver);if(st.q.trim())p.set("q",st.q.trim());
+  const h=location.hash.slice(1),keepHash=h&&!SNAME[h]&&!KIND_HASH[h]?"#"+h:"";const qs=p.toString();
+  const next=location.pathname+(qs?"?"+qs:"")+keepHash;if(next!==location.pathname+location.search+location.hash)history.replaceState(null,"",next)}catch{}}
+function readUrl(){const p=new URLSearchParams(location.search),h=location.hash.slice(1);
+  const sec=p.get("sector")||(SNAME[h]?h:"");st.sector=SNAME[sec]?sec:"";
+  const t=p.get("type")||KIND_HASH[h]||"all";st.type=TYPES_OK.has(t)?t:"all";
+  const s=p.get("status")||"";st.status=STATUS_OK.has(s)?s:"";const v=p.get("verified")||"";st.ver=VER_OK.has(v)?v:"";
+  st.q=(p.get("q")||"").slice(0,100);
+  $("q").value=st.q;$("fStatus").value=st.status;$("fVer").value=st.ver;
+  document.querySelectorAll(".kind").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.t===st.type)));}
+function setSector(k,scroll){st.sector=k;renderSectors();renderResults();if(scroll)$("directory").scrollIntoView({block:"start"})}
+
+/* typo-tolerant search: every word you type must match a word in the listing, allowing small typos */
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function lev(a,b,max){if(Math.abs(a.length-b.length)>max)return max+1;let prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){const cur=[i];let best=i;for(let j=1;j<=b.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));best=Math.min(best,cur[j])}if(best>max)return max+1;prev=cur}return prev[b.length]}
+function indexListing(l){const hay=norm([l.name,l.org,l.description,l.region,l.area,l.website,...(l.sectors||[]).map(s=>SNAME[s])].join(" "));
+  l._hay=hay;l._words=[...new Set(hay.split(/[^a-z0-9]+/).filter(Boolean))];return l}
+function tokenHit(l,t){if(l._hay.includes(t))return true;const max=t.length>=8?2:t.length>=4?1:0;if(!max)return false;
+  return l._words.some(w=>lev(t,w,max)<=max||(w.length>t.length&&lev(t,w.slice(0,t.length),max)<=max))}
+function matches(l,q){const toks=norm(q).split(/[^a-z0-9]+/).filter(Boolean);return toks.every(t=>tokenHit(l,t))}
 
 /* results */
-function filtered(){const q=st.q.trim().toLowerCase();
+function filtered(){const q=st.q.trim();
   return (st.listings||[]).filter(l=>kindOk(l)&&(!st.sector||(l.sectors||[]).includes(st.sector))&&(!st.status||l.status===st.status)
     &&(!st.ver||(st.ver==="yes"?!!l.verifiedAt:!l.verifiedAt))
-    &&(!q||[l.name,l.org,l.description,l.region,l.area,l.website,...(l.sectors||[]).map(s=>SNAME[s])].join(" ").toLowerCase().includes(q)))
+    &&(!q||matches(l,q)))
    .sort((a,b)=>(isBG(b)-isBG(a))||((a.order??999)-(b.order??999))||String(a.name).localeCompare(String(b.name)))}
 function card(l){const url=safeUrl(l.website||"");const secs=(l.sectors||[]).filter(s=>SNAME[s]);
   const kind=isBG(l)?el("span",{class:"badge b-bg"},icon("hammer"),el("span",{translate:"no"},"BetterGov")):l.type==="cso"?el("span",{class:"badge b-cso"},icon("users"),"CSO"):el("span",{class:"badge b-proj"},icon("code-xml"),"Civic tech");
@@ -56,7 +78,7 @@ function card(l){const url=safeUrl(l.website||"");const secs=(l.sectors||[]).fil
         l.verifiedAt?el("span",{class:"vf"},icon("badge-check"),"Verified "+fmtD(l.verifiedAt)):el("span",{class:"uv"},icon("clock"),"Needs verification")),
       el("div",{class:"r"},url?el("a",{class:"link",href:url,target:"_blank",rel:"noopener noreferrer",translate:"no","aria-label":"Visit "+(l.name||"site")+" (opens in a new tab)"},el("span",{},host(url)),icon("arrow-up-right")):el("span",{class:"nolink"},"No link yet"))))}
 function stateBox(ic,title,text,action){return el("div",{class:"state"},icon(ic),el("strong",{},title),el("p",{},text),action||null)}
-function renderResults(){const r=$("results");
+function renderResults(){const r=$("results");syncUrl();
   $("clearAll").hidden=!(st.sector||st.status||st.ver||st.q||st.type!=="all");
   $("activeSector").replaceChildren(st.sector?el("span",{class:"chip"},SNAME[st.sector],el("button",{type:"button","aria-label":"Clear sector filter",onclick:()=>setSector("",false)},icon("x"))):"");
   if(st.loadErr){r.setAttribute("aria-busy","false");r.replaceChildren(stateBox("cloud-off","The Directory Couldn’t Load",st.loadErr));$("count").textContent="";paintIcons();return}
@@ -78,7 +100,7 @@ function renderStats(){const L=st.listings||[];const f=n=>fmtNum.format(n);
   const c={all:L.length,project:L.filter(l=>l.type==="project").length,cso:L.filter(l=>l.type==="cso").length,bettergov:L.filter(isBG).length};
   document.querySelectorAll("[data-c]").forEach(s=>s.textContent=st.listings?f(c[s.dataset.c]):"");
 }
-function setType(t){st.type=t;document.querySelectorAll(".kind").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.t===t)));if(!st.sector)syncHash();renderSectors();renderResults()}
+function setType(t){st.type=t;document.querySelectorAll(".kind").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.t===t)));renderSectors();renderResults()}
 function clearAll(){st.status="";st.ver="";st.q="";$("q").value="";$("fStatus").value="";$("fVer").value="";st.sector="";setType("all");setSector("",false)}
 
 /* submit: build a pre-filled GitHub issue */
@@ -118,9 +140,9 @@ $("fVer").addEventListener("change",e=>{st.ver=e.target.value;renderResults()});
 $("q").addEventListener("input",e=>{st.q=e.target.value;renderResults()});
 $("searchForm").addEventListener("submit",e=>{e.preventDefault();st.q=$("q").value;renderResults();$("directory").scrollIntoView({block:"start"})});
 $("clearAll").addEventListener("click",clearAll);
-function readHash(){const h=location.hash.slice(1);if(SNAME[h]){st.sector=h;renderSectors();renderResults()}else if(KIND_HASH[h]){setType(KIND_HASH[h])}}
-window.addEventListener("hashchange",readHash);
-buildChecks();renderSectors();readHash();paintIcons();
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(SNAME[h]||KIND_HASH[h]){readUrl();renderSectors();renderResults()}});
+window.addEventListener("popstate",()=>{readUrl();renderSectors();renderResults()});
+buildChecks();readUrl();renderSectors();paintIcons();
 window.addEventListener("load",paintIcons);
 
 /* data */
@@ -129,7 +151,7 @@ window.addEventListener("load",paintIcons);
     const res=await fetch("data/listings.json",{cache:"no-cache"});
     if(!res.ok)throw new Error("HTTP "+res.status);
     const rows=await res.json();
-    st.listings=Array.isArray(rows)?rows:[];
+    st.listings=(Array.isArray(rows)?rows:[]).map(indexListing);
   }catch(err){st.loadErr="The listings file couldn’t load ("+(err.message||err)+"). Check your connection and reload the page."}
   renderSectors();renderResults();renderStats();
 })();

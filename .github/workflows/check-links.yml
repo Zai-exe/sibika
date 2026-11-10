@@ -1,0 +1,32 @@
+name: Weekly link check
+on:
+  schedule:
+    - cron: "0 1 * * 1" # Mondays, 09:00 Philippine time
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/check-links.mjs
+      - name: Open or update the broken-links issue
+        if: hashFiles('broken-links.md') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh label create broken-link --repo "$REPO" --color D93F0B --description "A listed website is not answering" 2>/dev/null || true
+          num=$(gh issue list --repo "$REPO" --label broken-link --state open --json number --jq '.[0].number')
+          if [ -n "$num" ]; then
+            gh issue edit "$num" --repo "$REPO" --body-file broken-links.md
+          else
+            gh issue create --repo "$REPO" --title "Listed websites not answering" --label broken-link --body-file broken-links.md
+          fi

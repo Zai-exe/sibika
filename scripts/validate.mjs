@@ -30,5 +30,16 @@ if (!Array.isArray(rows)) errors.push("listings.json must be an array");
   for (const k of ["org", "area", "region", "source", "maker"]) if (r[k] !== undefined && (typeof r[k] !== "string" || r[k].length > 200)) errors.push(`${at}: ${k} must be text under 200 characters`);
 });
 
+// Duplicates: same name (ignoring case, accents and punctuation) or same website
+const normName = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+const normSite = s => { try { const u = new URL(s); return (u.host.replace(/^www\./, "") + u.pathname).replace(/\/+$/, "").toLowerCase(); } catch { return ""; } };
+const seenName = new Map(), seenSite = new Map();
+(Array.isArray(rows) ? rows : []).forEach(r => {
+  if (!r || typeof r !== "object") return;
+  const n = normName(r.name), s = r.website ? normSite(r.website) : "";
+  if (n && seenName.has(n)) errors.push(`possible duplicate: "${r.id}" has the same name as "${seenName.get(n)}"`); else if (n) seenName.set(n, r.id);
+  if (s && seenSite.has(s)) errors.push(`possible duplicate: "${r.id}" has the same website as "${seenSite.get(s)}"`); else if (s) seenSite.set(s, r.id);
+});
+
 if (errors.length) { console.error(errors.join("\n")); process.exit(1); }
 console.log(`OK: ${rows.length} listings`);
