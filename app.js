@@ -144,7 +144,20 @@ function clampView(v){let w=Math.min(full.w,Math.max(full.w/MAXZ,v.w));const h=w
 function applyView(v){view=clampView(v);mapSvg.setAttribute("viewBox",`${view.x} ${view.y} ${view.w} ${view.h}`);const z=zoomOf();
   mapSvg.classList.toggle("zoomed",z>1.02);$("zoomLevel").textContent=(z<10?Math.round(z*10)/10:Math.round(z))+"×";
   $("zoomOut").disabled=z<=1.02;$("zoomIn").disabled=z>=MAXZ-.01;$("zoomReset").disabled=z<=1.02;renderLabels()}
-function animateTo(t){cancelAnimationFrame(anim);t=clampView(t);if(reduceMotion||!view){applyView(t);return}
+/* smooth wheel zoom: each scroll moves a target view, and the map glides toward it every frame */
+let zTarget=null,zAnim=0;
+function stopGlide(){zTarget=null;cancelAnimationFrame(zAnim);zAnim=0}
+function glideZoomAt(f,cx,cy){const b=zTarget||view;
+  const t=clampView({x:cx-(cx-b.x)/f,y:cy-(cy-b.y)/f,w:b.w/f,h:b.h/f});
+  cancelAnimationFrame(anim);if(reduceMotion){applyView(t);return}
+  zTarget=t;if(!zAnim)zAnim=requestAnimationFrame(glideStep)}
+function glideStep(){if(!zTarget){zAnim=0;return}
+  const k=.2,w=view.w*Math.pow(zTarget.w/view.w,k),h=w*full.h/full.w;
+  const cx=view.x+view.w/2,cy=view.y+view.h/2,tx=zTarget.x+zTarget.w/2,ty=zTarget.y+zTarget.h/2;
+  const ncx=cx+(tx-cx)*k,ncy=cy+(ty-cy)*k;
+  if(Math.abs(Math.log(zTarget.w/w))<.004&&Math.hypot(tx-ncx,ty-ncy)<.05){applyView(zTarget);zTarget=null;zAnim=0;return}
+  applyView({x:ncx-w/2,y:ncy-h/2,w,h});zAnim=requestAnimationFrame(glideStep)}
+function animateTo(t){cancelAnimationFrame(anim);stopGlide();t=clampView(t);if(reduceMotion||!view){applyView(t);return}
   const f={...view},t0=performance.now(),dur=380,fcx=f.x+f.w/2,fcy=f.y+f.h/2,tcx=t.x+t.w/2,tcy=t.y+t.h/2;
   const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3),w=f.w*Math.pow(t.w/f.w,e),h=w*full.h/full.w;
     applyView({x:fcx+(tcx-fcx)*e-w/2,y:fcy+(tcy-fcy)*e-h/2,w,h});if(k<1)anim=requestAnimationFrame(step)};
@@ -203,11 +216,11 @@ function buildMap(geo){mapGeo=geo;const [,,W,H]=geo.viewBox.split(" ").map(Numbe
     if(pts.size===1&&start.pts.size===1){const s=start.pts.get(e.pointerId);if(!s)return;const dx=e.clientX-s.x,dy=e.clientY-s.y;
       if(!start.moved&&Math.hypot(dx,dy)<5)return;
       if(zoomOf()<=1.02&&e.pointerType==="touch")return; // let one finger scroll the page when not zoomed
-      if(!start.moved){start.moved=true;svg.setPointerCapture(e.pointerId);svg.classList.add("dragging")}
+      if(!start.moved){start.moved=true;stopGlide();start.view={...view};svg.setPointerCapture(e.pointerId);svg.classList.add("dragging")}
       cancelAnimationFrame(anim);applyView({...start.view,x:start.view.x-dx*u,y:start.view.y-dy*u})}
     else if(pts.size===2){const [a,b]=[...pts.values()],[sa,sb]=[...start.pts.values()];if(!sa||!sb)return;
       const d0=Math.hypot(sa.x-sb.x,sa.y-sb.y)||1,d1=Math.hypot(a.x-b.x,a.y-b.y),f=d1/d0;start.moved=true;
-      const m=svgPointFromView(start.view,(sa.x+sb.x)/2,(sa.y+sb.y)/2);cancelAnimationFrame(anim);
+      const m=svgPointFromView(start.view,(sa.x+sb.x)/2,(sa.y+sb.y)/2);cancelAnimationFrame(anim);stopGlide();
       const w=start.view.w/f,h=start.view.h/f;applyView({x:m.x-(m.x-start.view.x)/f,y:m.y-(m.y-start.view.y)/f,w,h})}});
   const end=e=>{pts.delete(e.pointerId);svg.classList.remove("dragging");
     if(start&&start.moved){suppressClick=true;setTimeout(()=>{suppressClick=false},0)}
@@ -217,7 +230,7 @@ function buildMap(geo){mapGeo=geo;const [,,W,H]=geo.viewBox.split(" ").map(Numbe
   svg.addEventListener("wheel",e=>{const dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);if(!dy)return;
     if(dy>0&&zoomOf()<=1.02)return;
     e.preventDefault();if(dy<0&&zoomOf()>=MAXZ-.01)return;
-    const p=svgPoint(e.clientX,e.clientY);zoomAt(Math.exp(-Math.max(-120,Math.min(120,dy))*.0035),p.x,p.y,false)},{passive:false});
+    const p=svgPoint(e.clientX,e.clientY);glideZoomAt(Math.exp(-Math.max(-100,Math.min(100,dy))*.003),p.x,p.y)},{passive:false});
   svg.addEventListener("dblclick",e=>{e.preventDefault();const p=svgPoint(e.clientX,e.clientY);zoomAt(2,p.x,p.y,true)});
   stage.addEventListener("keydown",e=>{if(e.target.closest(".mapctl"))return;const step=view.w*.12;
     const k={"+":()=>zoomCenter(1.6),"=":()=>zoomCenter(1.6),"-":()=>zoomCenter(1/1.6),"0":()=>animateTo(full),
