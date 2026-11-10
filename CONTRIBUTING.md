@@ -29,7 +29,8 @@ Thanks for helping map civic work in the Philippines.
 | `verifiedAt` | yes | `YYYY-MM-DD` when someone last confirmed it, or `null` |
 | `org` | no | Who runs it |
 | `website` | no | Full `https://` link |
-| `region` | no | `Nationwide`, `NCR`, `Luzon`, `Visayas`, `Mindanao`, `BARMM` or `Local (single LGU)` |
+| `region` | no | Coverage as text: `Nationwide`, an island group (`Luzon`, `Visayas`, `Mindanao`) or a region name. Left out means nationwide. |
+| `areas` | no | Region codes the listing serves, for the map: `NCR`, `CAR`, `R1`–`R3`, `R4A` (Calabarzon), `R4B` (Mimaropa), `R5`–`R13`, `BARMM`. Overrides `region` for the map. |
 | `maker` | no | `bettergov` for BetterGov creations |
 | `area` | no | The maker's own category label |
 | `order` | no | Sort order within a maker's group |

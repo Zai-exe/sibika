@@ -225,13 +225,47 @@ textarea{min-height:100px;resize:vertical}
 .note li .ic{width:16px;height:16px;margin-top:3px;color:var(--ok)}
 .note b{color:var(--ink)}
 
-/* review */
-.queue{display:grid;gap:10px}
-.qitem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
-.qitem h3{font-size:17px;margin:8px 0 4px}
-.qitem p{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
-.qitem .acts{display:flex;gap:8px;flex-wrap:wrap}
-.qitem.undo{background:var(--surface-2)}
+/* map: one blue ramp for "how many local listings", gold for the selected region */
+:root{--m0:#cdd5e4;--m1:#bccdf1;--m2:#86a6e8;--m3:#4471d2;--m4:#0038a8;--m-edge:#ffffff;--m-sel:#f2b705}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--m0:#4a5878;--m1:#2f4f95;--m2:#3d68c9;--m3:#6b97f0;--m4:#b3cbff;--m-edge:#131b2e}}
+:root[data-theme="dark"]{--m0:#4a5878;--m1:#2f4f95;--m2:#3d68c9;--m3:#6b97f0;--m4:#b3cbff;--m-edge:#131b2e}
+.mapwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}
+.mapbox{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:grid;gap:12px}
+.mapbox svg{display:block;width:100%;height:auto;max-height:640px}
+.mapbox path{stroke:var(--m-edge);stroke-width:1;stroke-linejoin:round;cursor:pointer;transition:fill .15s,opacity .15s;outline:none}
+.mapbox path[data-l="0"]{fill:var(--m0)}.mapbox path[data-l="1"]{fill:var(--m1)}.mapbox path[data-l="2"]{fill:var(--m2)}.mapbox path[data-l="3"]{fill:var(--m3)}.mapbox path[data-l="4"]{fill:var(--m4)}
+.mapbox path:hover,.mapbox path:focus-visible{stroke:var(--ink);stroke-width:2}
+.mapbox path[aria-pressed="true"]{fill:var(--m-sel);stroke:var(--ink);stroke-width:2}
+.mapbox svg.has-sel path:not([aria-pressed="true"]){opacity:.8}
+.maptip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,calc(-100% - 10px));z-index:2}
+.maptip span{display:block;font-weight:500;opacity:.8}
+.legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-weight:600}
+.legend .sw{display:inline-flex;gap:2px}.legend .sw i{width:22px;height:10px;border-radius:3px}
+.mapnote{font-size:12px;color:var(--muted)}
+.placepanel{display:grid;gap:16px}
+.placecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;display:grid;gap:12px}
+.placecard h3{font-size:24px;letter-spacing:-.02em}
+.placecard .sub{color:var(--muted);font-size:14px}
+.pstats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pstat{background:var(--surface-2);border-radius:var(--r-md);padding:12px 14px}
+.pstat b{display:block;font:800 26px var(--display);letter-spacing:-.03em;line-height:1.1}
+.pstat span{font-size:13px;color:var(--muted);font-weight:600}
+.pactions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer;min-height:44px}
+.toggle input{accent-color:var(--blue);width:18px;height:18px;margin:0}
+.rgroups{display:grid;gap:12px}
+.rgroup h4{margin:0 0 6px;font:700 12.5px var(--text);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.rlist{display:flex;flex-wrap:wrap;gap:6px}
+.rbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 11px;font:600 13px var(--text);cursor:pointer;min-height:34px;transition:border-color .15s,background-color .15s}
+.rbtn:hover{border-color:var(--blue-ink)}
+.rbtn .ct{font-weight:700;color:var(--muted)}
+.rbtn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.rbtn[aria-pressed="true"] .ct{color:var(--bg)}
+.chip.place{background:var(--sun);color:#2b2000}
+.chip.place button{background:rgba(0,0,0,.12);color:#2b2000}
+.serves{display:inline-flex;align-items:center;gap:5px;color:var(--blue-ink);font-weight:600}
+.serves .ic{width:15px;height:15px}
+@media (max-width:900px){.mapwrap{grid-template-columns:minmax(0,1fr)}.mapbox svg{max-height:520px}}
 
 /* join */
 .join{background:var(--navy);color:var(--navy-ink)}
@@ -284,6 +318,7 @@ footer a .ic{width:15px;height:15px}
   <nav class="main" aria-label="Main">
     <a href="#directory"><i data-lucide="layout-grid" class="ic" aria-hidden="true"></i>Directory</a>
     <a href="#sectors"><i data-lucide="shapes" class="ic" aria-hidden="true"></i>Sectors</a>
+    <a href="#places"><i data-lucide="map" class="ic" aria-hidden="true"></i>Map</a>
     <a href="https://github.com/Zai-exe/sibika" target="_blank" rel="noopener noreferrer"><i data-lucide="code" class="ic" aria-hidden="true"></i>GitHub</a>
     <a href="#join"><i data-lucide="hand-heart" class="ic" aria-hidden="true"></i>Volunteer</a>
     <a href="#submit" class="cta"><i data-lucide="plus" class="ic" aria-hidden="true"></i>Submit a Listing</a>
@@ -329,6 +364,22 @@ footer a .ic{width:15px;height:15px}
   <div class="sectors" id="sectorGrid"></div>
 </div></section>
 
+<section class="block" id="places" style="padding-top:0"><div class="wrap">
+  <div class="head"><div><span class="eyebrow"><i data-lucide="map" class="ic" aria-hidden="true"></i>Map</span><h2>Explore by Place</h2><p>Select your region on the map or from the list to see projects and organizations that serve it. Darker regions have more local listings.</p></div></div>
+  <div class="mapwrap">
+    <div class="mapbox">
+      <div id="mapSvg" role="group" aria-label="Map of Philippine regions"><div class="skel" style="height:420px"></div></div>
+      <div class="maptip" id="mapTip" hidden></div>
+      <div class="legend" aria-hidden="true"><span>Local listings</span><span class="sw"><i style="background:var(--m0)"></i><i style="background:var(--m1)"></i><i style="background:var(--m2)"></i><i style="background:var(--m3)"></i><i style="background:var(--m4)"></i></span><span>0 → 6+</span><span class="sw"><i style="background:var(--m-sel)"></i></span><span>Selected</span></div>
+      <p class="mapnote">Boundaries: NAMRIA, PSA and OCHA Philippines via geoBoundaries (CC BY 3.0 IGO), 2020 regions, simplified. Negros Island Region isn’t shown separately yet.</p>
+    </div>
+    <div class="placepanel">
+      <div class="placecard" id="placeCard" aria-live="polite"></div>
+      <div class="rgroups" id="regionList" aria-label="Regions"></div>
+    </div>
+  </div>
+</div></section>
+
 <section class="block" id="directory" style="padding-top:0"><div class="wrap">
   <div class="head"><div><span class="eyebrow"><i data-lucide="layout-grid" class="ic" aria-hidden="true"></i>Directory</span><h2>Projects &amp; Organizations</h2><p><span translate="no">BetterGov</span> creations come from their public projects list. Other starter entries say “Needs verification” until a volunteer checks them.</p></div></div>
   <div class="toolbar">
@@ -367,7 +418,7 @@ footer a .ic{width:15px;height:15px}
       <div class="fr">
         <div class="field"><label for="f-url">Website or repository</label><input id="f-url" name="website" type="url" maxlength="300" placeholder="https://example.org…" inputmode="url" autocomplete="url" spellcheck="false" aria-describedby="e-url"><span class="err" id="e-url" hidden></span></div>
         <div class="field"><label for="f-region">Coverage</label>
-          <select id="f-region" name="region"><option>Nationwide</option><option>NCR</option><option>Luzon</option><option>Visayas</option><option>Mindanao</option><option>BARMM</option><option>Local (single LGU)</option></select></div>
+          <select id="f-region" name="region"><option value="Nationwide">Nationwide</option><optgroup label="Island group"><option value="Luzon">Luzon</option><option value="Visayas">Visayas</option><option value="Mindanao">Mindanao</option></optgroup><optgroup label="Region" id="regionOpts"></optgroup></select></div>
       </div>
       <div class="fr">
         <div class="field"><label for="f-status">Is it still active?</label>

@@ -4,7 +4,8 @@ import { readFileSync } from "node:fs";
 const SECTORS = new Set(["disaster","social","govservices","travel","health","education","business","taxes","labor","law","elections","transparency","agri","infra","safety"]);
 const TYPES = new Set(["project", "cso"]);
 const STATUSES = new Set(["active", "dormant", "unknown"]);
-const KEYS = new Set(["id","name","type","maker","org","area","description","sectors","website","region","status","verifiedAt","source","order"]);
+const KEYS = new Set(["id","name","type","maker","org","area","description","sectors","website","region","areas","status","verifiedAt","source","order"]);
+const AREAS = new Set(["NCR","CAR","R1","R2","R3","R4A","R4B","R5","R6","R7","R8","R9","R10","R11","R12","R13","BARMM"]);
 
 const rows = JSON.parse(readFileSync(new URL("../data/listings.json", import.meta.url), "utf8"));
 const errors = [];
@@ -21,6 +22,7 @@ if (!Array.isArray(rows)) errors.push("listings.json must be an array");
   if (!TYPES.has(r.type)) errors.push(`${at}: type must be project or cso`);
   if (typeof r.description !== "string" || r.description.length < 10 || r.description.length > 500) errors.push(`${at}: description must be 10–500 characters`);
   if (!Array.isArray(r.sectors) || !r.sectors.length || r.sectors.some(s => !SECTORS.has(s))) errors.push(`${at}: sectors must be a non-empty list of known sector ids`);
+  if (r.areas !== undefined && (!Array.isArray(r.areas) || !r.areas.length || r.areas.some(a => !AREAS.has(a)))) errors.push(`${at}: areas must be a non-empty list of region codes (${[...AREAS].join(", ")})`);
   if (!STATUSES.has(r.status)) errors.push(`${at}: status must be active, dormant or unknown`);
   if (r.verifiedAt !== null && !(typeof r.verifiedAt === "string" && /^\d{4}-\d{2}-\d{2}/.test(r.verifiedAt))) errors.push(`${at}: verifiedAt must be YYYY-MM-DD or null`);
   if (r.website !== undefined) {
