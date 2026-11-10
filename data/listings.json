@@ -267,15 +267,16 @@
     "name": "BetterNAIA",
     "type": "project",
     "maker": "bettergov",
-    "org": "BetterGov.ph",
+    "org": "Better NAIA volunteers",
     "area": "Public services",
-    "description": "Airport information project. Its public website is offline for now, per BetterGov's projects page.",
+    "description": "Live departure and arrival boards, delay tracking, a terminal finder and practical travel guides for Manila’s NAIA airport.",
     "sectors": [
       "travel",
       "infra"
     ],
+    "website": "https://betternaia.com/",
     "region": "NCR",
-    "status": "unknown",
+    "status": "active",
     "verifiedAt": null,
     "source": "about.bettergov.ph/projects",
     "order": 14
@@ -574,6 +575,7 @@
       "taxes",
       "business"
     ],
+    "website": "https://www.aer.ph/",
     "region": "Nationwide",
     "status": "unknown",
     "verifiedAt": null,
@@ -601,6 +603,7 @@
       "transparency",
       "agri"
     ],
+    "website": "https://www.bantaykita.ph/",
     "region": "Nationwide",
     "status": "unknown",
     "verifiedAt": null,
@@ -630,6 +633,7 @@
       "social",
       "elections"
     ],
+    "website": "https://code-ngo.org/",
     "region": "Nationwide",
     "status": "unknown",
     "verifiedAt": null,
@@ -684,6 +688,7 @@
     "sectors": [
       "social"
     ],
+    "website": "https://gk1world.com/",
     "region": "Nationwide",
     "status": "active",
     "verifiedAt": null,
@@ -697,6 +702,7 @@
     "sectors": [
       "agri"
     ],
+    "website": "https://haribon.org.ph/",
     "region": "Nationwide",
     "status": "active",
     "verifiedAt": null,
@@ -725,6 +731,7 @@
     "sectors": [
       "health"
     ],
+    "website": "https://www.likhaan.org/",
     "region": "NCR",
     "status": "unknown",
     "verifiedAt": null,
@@ -739,6 +746,7 @@
     "sectors": [
       "elections"
     ],
+    "website": "https://namfrel.org.ph/",
     "region": "Nationwide",
     "status": "active",
     "verifiedAt": null,
@@ -754,6 +762,7 @@
       "business",
       "social"
     ],
+    "website": "https://www.pbsp.org.ph/",
     "region": "Nationwide",
     "status": "active",
     "verifiedAt": null,
@@ -801,6 +810,7 @@
       "agri",
       "social"
     ],
+    "website": "https://www.prrm.org/",
     "region": "Nationwide",
     "status": "unknown",
     "verifiedAt": null,
@@ -815,6 +825,7 @@
     "sectors": [
       "elections"
     ],
+    "website": "https://ppcrv.org/",
     "region": "Nationwide",
     "status": "active",
     "verifiedAt": null,
@@ -829,8 +840,9 @@
     "sectors": [
       "disaster"
     ],
+    "website": "https://agos.rappler.com/",
     "region": "Nationwide",
-    "status": "unknown",
+    "status": "active",
     "verifiedAt": null,
     "source": "seed"
   },

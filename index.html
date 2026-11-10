@@ -226,18 +226,53 @@ textarea{min-height:100px;resize:vertical}
 .note b{color:var(--ink)}
 
 /* map: one blue ramp for "how many local listings", gold for the selected region */
-:root{--m0:#cdd5e4;--m1:#bccdf1;--m2:#86a6e8;--m3:#4471d2;--m4:#0038a8;--m-edge:#ffffff;--m-sel:#f2b705}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--m0:#4a5878;--m1:#2f4f95;--m2:#3d68c9;--m3:#6b97f0;--m4:#b3cbff;--m-edge:#131b2e}}
-:root[data-theme="dark"]{--m0:#4a5878;--m1:#2f4f95;--m2:#3d68c9;--m3:#6b97f0;--m4:#b3cbff;--m-edge:#131b2e}
-.mapwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:28px;align-items:start}
-.mapbox{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:grid;gap:12px}
-.mapbox svg{display:block;width:100%;height:auto;max-height:640px}
-.mapbox path{stroke:var(--m-edge);stroke-width:1;stroke-linejoin:round;cursor:pointer;transition:fill .15s,opacity .15s;outline:none}
-.mapbox path[data-l="0"]{fill:var(--m0)}.mapbox path[data-l="1"]{fill:var(--m1)}.mapbox path[data-l="2"]{fill:var(--m2)}.mapbox path[data-l="3"]{fill:var(--m3)}.mapbox path[data-l="4"]{fill:var(--m4)}
-.mapbox path:hover,.mapbox path:focus-visible{stroke:var(--ink);stroke-width:2}
-.mapbox path[aria-pressed="true"]{fill:var(--m-sel);stroke:var(--ink);stroke-width:2}
-.mapbox svg.has-sel path:not([aria-pressed="true"]){opacity:.8}
-.maptip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,calc(-100% - 10px));z-index:2}
+:root{--m0:#d5dcea;--m1:#bccdf1;--m2:#86a6e8;--m3:#4471d2;--m4:#0038a8;--m-sel:#f2b705;--m-sea:#eef3fb;
+  --m-border:#3c4a66;--m-prov:rgba(60,74,102,.42);--m-label:#0e1726;--m-halo:rgba(255,255,255,.92)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--m0:#4a5878;--m1:#2f4f95;--m2:#3d68c9;--m3:#6b97f0;--m4:#b3cbff;--m-sea:#0f1729;
+  --m-border:#dbe3f3;--m-prov:rgba(219,227,243,.38);--m-label:#f2f5fb;--m-halo:rgba(12,18,34,.9)}}
+:root[data-theme="dark"]{--m0:#4a5878;--m1:#2f4f95;--m2:#3d68c9;--m3:#6b97f0;--m4:#b3cbff;--m-sea:#0f1729;
+  --m-border:#dbe3f3;--m-prov:rgba(219,227,243,.38);--m-label:#f2f5fb;--m-halo:rgba(12,18,34,.9)}
+.mapwrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;align-items:start}
+.mapbox{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;display:grid;gap:12px;min-width:0}
+.mapstage{position:relative;border-radius:var(--r-md);overflow:hidden;background:var(--m-sea);border:1px solid var(--line);height:min(640px,75vh);min-height:380px}
+.mapstage svg{display:block;width:100%;height:100%;cursor:grab;touch-action:pan-x pan-y;user-select:none;-webkit-user-select:none}
+.mapstage svg.zoomed{touch-action:none}
+.mapstage svg.dragging{cursor:grabbing}
+.mapstage path{vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.mapstage .rfill path{stroke:none;transition:fill .15s;outline:none}
+.mapstage .rfill path[data-l="0"]{fill:var(--m0)}.mapstage .rfill path[data-l="1"]{fill:var(--m1)}.mapstage .rfill path[data-l="2"]{fill:var(--m2)}.mapstage .rfill path[data-l="3"]{fill:var(--m3)}.mapstage .rfill path[data-l="4"]{fill:var(--m4)}
+.mapstage .rfill path[aria-pressed="true"]{fill:var(--m-sel)}
+.mapstage .prov path{fill:transparent;stroke:var(--m-prov);stroke-width:.8;pointer-events:fill;cursor:pointer}
+.mapstage .prov path:hover{fill:rgba(255,255,255,.18);stroke:var(--m-border);stroke-width:1.4}
+.mapstage .rline path{fill:none;stroke:var(--m-border);stroke-width:1.5;pointer-events:none}
+.mapstage .rline path.sel{stroke:var(--ink);stroke-width:3}
+.mapstage .rfill path:focus-visible{fill:var(--m-sel)}
+.mapstage text{fill:var(--m-label);stroke:var(--m-halo);paint-order:stroke;stroke-linejoin:round;font-family:var(--text);font-weight:700;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.mapstage .plabel text{font-weight:600;fill:var(--muted)}
+.mapstage .pin circle{fill:#c4122f;stroke:#fff;vector-effect:non-scaling-stroke;stroke-width:2.5}
+.mapctl{position:absolute;top:10px;right:10px;display:grid;gap:6px;z-index:2}
+.mapctl button{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);cursor:pointer;box-shadow:0 4px 12px -6px rgba(11,29,74,.35);transition:background-color .15s,border-color .15s}
+.mapctl button:hover{border-color:var(--ink);background:var(--surface-2)}
+.mapctl button[disabled]{opacity:.45;cursor:default}
+.maphint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;pointer-events:none;z-index:2;white-space:nowrap}
+.zoomlevel{position:absolute;left:10px;bottom:10px;font:600 12px var(--text);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 9px;z-index:2}
+/* place search (combobox) */
+.psearch{position:relative}
+.psearch .box{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface);padding:0 10px}
+.psearch .box:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-soft)}
+.psearch input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:500 15px var(--text);padding:11px 2px;min-height:44px}
+.psearch input:focus{outline:none}
+.psearch .ic{color:var(--muted)}
+.psearch ul{position:absolute;left:0;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-md);box-shadow:0 18px 40px -20px rgba(11,29,74,.5);z-index:5;max-height:340px;overflow:auto;overscroll-behavior:contain}
+.psearch li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:center;padding:9px 10px;border-radius:8px;cursor:pointer}
+.psearch li .ic{width:17px;height:17px;color:var(--blue-ink)}
+.psearch li b{display:block;font-weight:600;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.psearch li small{display:block;font-size:12.5px;color:var(--muted)}
+.psearch li[aria-selected="true"],.psearch li:hover{background:var(--blue-soft)}
+.psearch .none{display:block;padding:10px;color:var(--muted);font-size:14px;cursor:default}
+.pinned{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--sun-soft);border-radius:999px;padding:4px 10px 4px 8px}
+.pinned .ic{width:15px;height:15px;color:#c4122f}
+.maptip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;font-weight:600;padding:6px 10px;border-radius:8px;white-space:nowrap;transform:translate(-50%,calc(-100% - 10px));z-index:3}
 .maptip span{display:block;font-weight:500;opacity:.8}
 .legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-weight:600}
 .legend .sw{display:inline-flex;gap:2px}.legend .sw i{width:22px;height:10px;border-radius:3px}
@@ -365,13 +400,28 @@ footer a .ic{width:15px;height:15px}
 </div></section>
 
 <section class="block" id="places" style="padding-top:0"><div class="wrap">
-  <div class="head"><div><span class="eyebrow"><i data-lucide="map" class="ic" aria-hidden="true"></i>Map</span><h2>Explore by Place</h2><p>Select your region on the map or from the list to see projects and organizations that serve it. Darker regions have more local listings.</p></div></div>
+  <div class="head"><div><span class="eyebrow"><i data-lucide="map" class="ic" aria-hidden="true"></i>Map</span><h2>Explore by Place</h2><p>Search for your city, town, province or region, or select it on the map, to see projects and organizations that serve it. Darker regions have more local listings.</p></div></div>
   <div class="mapwrap">
     <div class="mapbox">
-      <div id="mapSvg" role="group" aria-label="Map of Philippine regions"><div class="skel" style="height:420px"></div></div>
-      <div class="maptip" id="mapTip" hidden></div>
+      <div class="psearch">
+        <label for="placeQ" class="sr">Search for a city, town, province or region</label>
+        <div class="box"><i data-lucide="map-pin" class="ic" aria-hidden="true"></i>
+          <input id="placeQ" name="place-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="placeList" autocomplete="off" spellcheck="false" placeholder="Search a city, town, province or region…"></div>
+        <ul id="placeList" role="listbox" aria-label="Matching places" hidden></ul>
+      </div>
+      <div class="mapstage" id="mapStage">
+        <div id="mapSvg" role="group" aria-label="Map of Philippine regions and provinces"><div class="skel" style="height:100%"></div></div>
+        <div class="mapctl" role="group" aria-label="Map zoom">
+          <button type="button" id="zoomIn" aria-label="Zoom in"><i data-lucide="plus" class="ic" aria-hidden="true"></i></button>
+          <button type="button" id="zoomOut" aria-label="Zoom out"><i data-lucide="minus" class="ic" aria-hidden="true"></i></button>
+          <button type="button" id="zoomReset" aria-label="Show the whole country"><i data-lucide="maximize" class="ic" aria-hidden="true"></i></button>
+        </div>
+        <span class="zoomlevel num" id="zoomLevel" aria-hidden="true">1×</span>
+        <div class="maphint" id="mapHint" hidden></div>
+        <div class="maptip" id="mapTip" hidden></div>
+      </div>
       <div class="legend" aria-hidden="true"><span>Local listings</span><span class="sw"><i style="background:var(--m0)"></i><i style="background:var(--m1)"></i><i style="background:var(--m2)"></i><i style="background:var(--m3)"></i><i style="background:var(--m4)"></i></span><span>0 → 6+</span><span class="sw"><i style="background:var(--m-sel)"></i></span><span>Selected</span></div>
-      <p class="mapnote">Boundaries: NAMRIA, PSA and OCHA Philippines via geoBoundaries (CC BY 3.0 IGO), 2020 regions, simplified. Negros Island Region isn’t shown separately yet.</p>
+      <p class="mapnote">Zoom with the buttons, Ctrl + scroll, a double-click or a pinch; drag to move around. Boundaries: NAMRIA, PSA and OCHA Philippines via geoBoundaries (CC BY 3.0 IGO), 2020 regions, simplified. Negros Island Region isn’t shown separately yet.</p>
     </div>
     <div class="placepanel">
       <div class="placecard" id="placeCard" aria-live="polite"></div>

@@ -123,55 +123,185 @@ function renderStats(){const L=st.listings||[];const f=n=>fmtNum.format(n);
   document.querySelectorAll("[data-c]").forEach(s=>s.textContent=st.listings?f(c[s.dataset.c]):"");
 }
 function setType(t){st.type=t;document.querySelectorAll(".kind").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.t===t)));renderSectors();renderResults()}
-function clearAll(){st.status="";st.ver="";st.q="";st.place="";st.nat=true;$("q").value="";$("fStatus").value="";$("fVer").value="";st.sector="";setType("all");setSector("",false)}
+function clearAll(){st.status="";st.ver="";st.q="";st.place="";st.nat=true;pin=null;$("q").value="";$("fStatus").value="";$("fVer").value="";st.sector="";setType("all");setSector("",false)}
 
-/* map */
-const SVGNS="http://www.w3.org/2000/svg";
-let mapPaths={},mapGeo=null;
-function setPlace(code,scroll){st.place=code;renderSectors();renderResults();if(scroll)$("directory").scrollIntoView({block:"start"})}
+/* map: regions coloured by local listings, province lines, zoom and pan, labels, place search */
+const SVGNS="http://www.w3.org/2000/svg",MAXZ=24;
+const reduceMotion=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let mapPaths={},mapLines={},mapGeo=null,mapSvg=null,view=null,full=null,labels=null,pinG=null,pin=null,lastFit=null,anim=0,suppressClick=false,hintTimer=0;
+const sv=(tag,attrs={})=>{const e=document.createElementNS(SVGNS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e};
+const provName=n=>String(n).replace(/^NCR,\s*/,"Metro Manila, ");
+const SHORT={NCR:"NCR",CAR:"CAR",BARMM:"BARMM"};
+function setPlace(code,scroll){st.place=code;if(!code)pin=null;renderSectors();renderResults();if(scroll)$("directory").scrollIntoView({block:"start"})}
 function placeCounts(){const local={},L=(st.listings||[]).filter(kindOk);let nat=0;
   for(const l of L){if(l._nat)nat++;for(const c of l._places)local[c]=(local[c]||0)+1}return{local,nat}}
-function buildMap(geo){mapGeo=geo;const box=$("mapSvg");
-  const svg=document.createElementNS(SVGNS,"svg");svg.setAttribute("viewBox",geo.viewBox);svg.setAttribute("aria-hidden","false");
-  const tip=$("mapTip"),wrap=box.parentElement;
-  const showTip=(r,x,y)=>{const {local,nat}=placeCounts();const n=local[r.code]||0;
-    tip.replaceChildren(r.name,el("span",{},fmtNum.format(n)+(n===1?" local listing":" local listings")+" · "+fmtNum.format(nat)+" nationwide"));
-    tip.style.left=x+"px";tip.style.top=y+"px";tip.hidden=false};
-  for(const r of geo.regions){
-    if(!RNAME[r.code])continue;
-    const p=document.createElementNS(SVGNS,"path");p.setAttribute("d",r.d);p.setAttribute("tabindex","0");p.setAttribute("role","button");
-    p.addEventListener("click",()=>setPlace(st.place===r.code?"":r.code));
-    p.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setPlace(st.place===r.code?"":r.code)}});
-    p.addEventListener("pointermove",e=>{const b=wrap.getBoundingClientRect();showTip(r,e.clientX-b.left,e.clientY-b.top)});
-    p.addEventListener("pointerleave",()=>{tip.hidden=true});
-    p.addEventListener("focus",()=>{const b=wrap.getBoundingClientRect(),s=svg.getBoundingClientRect(),[,,vw,vh]=geo.viewBox.split(" ").map(Number);
-      showTip(r,s.left-b.left+r.cx*s.width/vw,s.top-b.top+r.cy*s.height/vh)});
+
+/* view box maths: the view keeps the map's aspect ratio; zoom is full width / view width */
+const zoomOf=()=>full?full.w/view.w:1;
+function unitsPerPx(){const r=mapSvg.getBoundingClientRect();return Math.max(view.w/(r.width||1),view.h/(r.height||1))}
+function clampView(v){let w=Math.min(full.w,Math.max(full.w/MAXZ,v.w));const h=w*full.h/full.w;
+  const cx=Math.min(full.w,Math.max(0,v.x+v.w/2)),cy=Math.min(full.h,Math.max(0,v.y+v.h/2));return{x:cx-w/2,y:cy-h/2,w,h}}
+function applyView(v){view=clampView(v);mapSvg.setAttribute("viewBox",`${view.x} ${view.y} ${view.w} ${view.h}`);const z=zoomOf();
+  mapSvg.classList.toggle("zoomed",z>1.02);$("zoomLevel").textContent=(z<10?Math.round(z*10)/10:Math.round(z))+"×";
+  $("zoomOut").disabled=z<=1.02;$("zoomIn").disabled=z>=MAXZ-.01;$("zoomReset").disabled=z<=1.02;renderLabels()}
+function animateTo(t){cancelAnimationFrame(anim);t=clampView(t);if(reduceMotion||!view){applyView(t);return}
+  const f={...view},t0=performance.now(),dur=380,fcx=f.x+f.w/2,fcy=f.y+f.h/2,tcx=t.x+t.w/2,tcy=t.y+t.h/2;
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,3),w=f.w*Math.pow(t.w/f.w,e),h=w*full.h/full.w;
+    applyView({x:fcx+(tcx-fcx)*e-w/2,y:fcy+(tcy-fcy)*e-h/2,w,h});if(k<1)anim=requestAnimationFrame(step)};
+  anim=requestAnimationFrame(step)}
+function zoomAt(f,cx,cy,smooth){const t={x:cx-(cx-view.x)/f,y:cy-(cy-view.y)/f,w:view.w/f,h:view.h/f};smooth?animateTo(t):(cancelAnimationFrame(anim),applyView(t))}
+function zoomCenter(f){zoomAt(f,view.x+view.w/2,view.y+view.h/2,true)}
+function fitBox([x0,y0,x1,y1],pad=.12,minW=30){let w=Math.max(x1-x0,(y1-y0)*full.w/full.h)*(1+pad*2);w=Math.max(w,minW);const h=w*full.h/full.w;
+  animateTo({x:(x0+x1)/2-w/2,y:(y0+y1)/2-h/2,w,h})}
+function svgPoint(x,y){const p=mapSvg.createSVGPoint();p.x=x;p.y=y;return p.matrixTransform(mapSvg.getScreenCTM().inverse())}
+
+/* labels: region names from 1.6×, province names from 4×, sized to stay readable at any zoom */
+function renderLabels(){if(!labels)return;const u=unitsPerPx(),z=zoomOf();
+  labels.setAttribute("font-size",String(12.5*u));labels.setAttribute("stroke-width",String(3.2*u));
+  labels.querySelector(".rlabel").style.display=z>=1.6&&z<5?"":"none";
+  const pl=labels.querySelector(".plabel");pl.style.display=z>=4?"":"none";pl.setAttribute("font-size",String(11.5*u));
+  if(pinG){pinG.replaceChildren();if(pin){pinG.append(sv("circle",{cx:pin.x,cy:pin.y,r:String(6*u)}));
+    const t=sv("text",{x:pin.x,y:String(pin.y-15*u),"font-size":String(13*u),"stroke-width":String(3.4*u)});t.textContent=pin.name;pinG.append(t)}}}
+
+function showHint(msg){const h=$("mapHint");h.textContent=msg;h.hidden=false;clearTimeout(hintTimer);hintTimer=setTimeout(()=>{h.hidden=true},1600)}
+function selectRegion(code){pin=null;setPlace(st.place===code?"":code)}
+
+function buildMap(geo){mapGeo=geo;const [,,W,H]=geo.viewBox.split(" ").map(Number);full={x:0,y:0,w:W,h:H};
+  const svg=mapSvg=sv("svg",{viewBox:geo.viewBox,preserveAspectRatio:"xMidYMid meet"});
+  const gFill=sv("g",{class:"rfill"}),gProv=sv("g",{class:"prov"}),gLine=sv("g",{class:"rline"});labels=sv("g",{class:"labels"});pinG=sv("g",{class:"pin"});
+  const rl=sv("g",{class:"rlabel"}),pl=sv("g",{class:"plabel"});labels.append(rl,pl);
+  const stage=$("mapStage"),tip=$("mapTip");
+  const tipAt=(title,sub,x,y)=>{tip.replaceChildren(title,el("span",{},sub));tip.style.left=x+"px";tip.style.top=y+"px";tip.hidden=false};
+  const subFor=code=>{const {local,nat}=placeCounts(),n=local[code]||0;return RNAME[code]+" · "+fmtNum.format(n)+(n===1?" local listing":" local listings")+", "+fmtNum.format(nat)+" nationwide"};
+  for(const r of geo.regions){if(!RNAME[r.code])continue;
+    const p=sv("path",{d:r.d,tabindex:"0",role:"button"});
+    p.addEventListener("click",()=>{if(!suppressClick)selectRegion(r.code)});
+    p.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectRegion(r.code)}});
+    p.addEventListener("focus",()=>{const b=stage.getBoundingClientRect(),s=svgPointToClient(r.cx,r.cy);tipAt(r.name,subFor(r.code).replace(RNAME[r.code]+" · ",""),s.x-b.left,s.y-b.top)});
     p.addEventListener("blur",()=>{tip.hidden=true});
-    svg.append(p);mapPaths[r.code]=p}
-  box.replaceChildren(svg);renderPlaces()}
+    gFill.append(p);mapPaths[r.code]=p;
+    const ln=sv("path",{d:r.d});gLine.append(ln);mapLines[r.code]=ln;
+    const t=sv("text",{x:r.cx,y:r.cy});t.textContent=SHORT[r.code]||r.name;rl.append(t)}
+  geo.provinces.forEach(pv=>{
+    const p=sv("path",{d:pv.d});
+    p.addEventListener("click",()=>{if(suppressClick)return;pin=null;
+      if(zoomOf()>=2.5){pin={name:provName(pv.name),sub:RNAME[pv.region],x:pv.cx,y:pv.cy,box:pv.bbox,kind:"province"};st.place=pv.region;renderSectors();renderResults()}
+      else selectRegion(pv.region)});
+    p.addEventListener("pointermove",e=>{if(e.pointerType==="touch")return;const b=stage.getBoundingClientRect();tipAt(provName(pv.name),subFor(pv.region),e.clientX-b.left,e.clientY-b.top)});
+    p.addEventListener("pointerleave",()=>{tip.hidden=true});
+    gProv.append(p);
+    const t=sv("text",{x:pv.cx,y:pv.cy});t.textContent=provName(pv.name).replace(/^Metro Manila, /,"");pl.append(t)});
+  svg.append(gFill,gProv,gLine,labels,pinG);
+  $("mapSvg").replaceChildren(svg);view={...full};
+
+  // drag to pan, two fingers to pinch, Ctrl/⌘ + wheel or double-click to zoom
+  const pts=new Map();let start=null;
+  svg.addEventListener("pointerdown",e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    start={view:{...view},pts:new Map([...pts].map(([k,v])=>[k,{...v}])),moved:false};tip.hidden=true});
+  svg.addEventListener("pointermove",e=>{if(!pts.has(e.pointerId)||!start)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    const u=unitsPerPx();
+    if(pts.size===1&&start.pts.size===1){const s=start.pts.get(e.pointerId);if(!s)return;const dx=e.clientX-s.x,dy=e.clientY-s.y;
+      if(!start.moved&&Math.hypot(dx,dy)<5)return;
+      if(zoomOf()<=1.02&&e.pointerType==="touch")return; // let one finger scroll the page when not zoomed
+      if(!start.moved){start.moved=true;svg.setPointerCapture(e.pointerId);svg.classList.add("dragging")}
+      cancelAnimationFrame(anim);applyView({...start.view,x:start.view.x-dx*u,y:start.view.y-dy*u})}
+    else if(pts.size===2){const [a,b]=[...pts.values()],[sa,sb]=[...start.pts.values()];if(!sa||!sb)return;
+      const d0=Math.hypot(sa.x-sb.x,sa.y-sb.y)||1,d1=Math.hypot(a.x-b.x,a.y-b.y),f=d1/d0;start.moved=true;
+      const m=svgPointFromView(start.view,(sa.x+sb.x)/2,(sa.y+sb.y)/2);cancelAnimationFrame(anim);
+      const w=start.view.w/f,h=start.view.h/f;applyView({x:m.x-(m.x-start.view.x)/f,y:m.y-(m.y-start.view.y)/f,w,h})}});
+  const end=e=>{pts.delete(e.pointerId);svg.classList.remove("dragging");
+    if(start&&start.moved){suppressClick=true;setTimeout(()=>{suppressClick=false},0)}
+    start=pts.size?{view:{...view},pts:new Map([...pts].map(([k,v])=>[k,{...v}])),moved:true}:null};
+  svg.addEventListener("pointerup",end);svg.addEventListener("pointercancel",end);
+  svg.addEventListener("wheel",e=>{if(!(e.ctrlKey||e.metaKey)){if(zoomOf()<=1.02)return;showHint("Hold Ctrl (or ⌘) and scroll to zoom");return}
+    e.preventDefault();const p=svgPoint(e.clientX,e.clientY);zoomAt(Math.exp(-e.deltaY*.0025),p.x,p.y,false)},{passive:false});
+  svg.addEventListener("dblclick",e=>{e.preventDefault();const p=svgPoint(e.clientX,e.clientY);zoomAt(2,p.x,p.y,true)});
+  stage.addEventListener("keydown",e=>{if(e.target.closest(".mapctl"))return;const step=view.w*.12;
+    const k={"+":()=>zoomCenter(1.6),"=":()=>zoomCenter(1.6),"-":()=>zoomCenter(1/1.6),"0":()=>animateTo(full),
+      ArrowLeft:()=>animateTo({...view,x:view.x-step}),ArrowRight:()=>animateTo({...view,x:view.x+step}),ArrowUp:()=>animateTo({...view,y:view.y-step}),ArrowDown:()=>animateTo({...view,y:view.y+step})}[e.key];
+    if(k&&!(e.key.startsWith("Arrow")&&zoomOf()<=1.02)){e.preventDefault();k()}});
+  $("zoomIn").addEventListener("click",()=>zoomCenter(1.8));$("zoomOut").addEventListener("click",()=>zoomCenter(1/1.8));
+  $("zoomReset").addEventListener("click",()=>animateTo(full));
+  new ResizeObserver(()=>renderLabels()).observe(stage);
+  applyView(full);renderPlaces()}
+function svgPointToClient(x,y){const m=mapSvg.getScreenCTM();return{x:m.a*x+m.e,y:m.d*y+m.f}}
+function svgPointFromView(v,cx,cy){const saved=mapSvg.getAttribute("viewBox");mapSvg.setAttribute("viewBox",`${v.x} ${v.y} ${v.w} ${v.h}`);const p=svgPoint(cx,cy);mapSvg.setAttribute("viewBox",saved);return p}
+
 function renderPlaces(){
   const {local,nat}=placeCounts(),ready=!!st.listings;
   for(const [code,p] of Object.entries(mapPaths)){const n=local[code]||0;p.setAttribute("data-l",String(placeLevel(n)));p.setAttribute("aria-pressed",String(st.place===code));
     p.setAttribute("aria-label",RNAME[code]+", "+n+(n===1?" local listing":" local listings"))}
-  const svg=$("mapSvg").querySelector("svg");if(svg)svg.classList.toggle("has-sel",!!st.place);
+  for(const [code,ln] of Object.entries(mapLines)){ln.classList.toggle("sel",st.place===code);if(st.place===code)ln.parentNode.append(ln)}
+  // move the view when the selection changes
+  if(mapGeo){const key=st.place+"|"+(pin?pin.name:"");if(key!==lastFit){const first=lastFit===null;lastFit=key;
+    if(pin)fitBox(pin.box||[pin.x-10,pin.y-10,pin.x+10,pin.y+10],.15,pin.kind==="province"?40:24);
+    else if(st.place){const r=mapGeo.regions.find(x=>x.code===st.place);if(r)fitBox(r.bbox)}
+    else if(!first)animateTo(full)}
+    renderLabels()}
   // region list (works without the map, and on small screens)
   $("regionList").replaceChildren(...GROUPS.map(g=>el("div",{class:"rgroup"},el("h4",{},g),el("div",{class:"rlist"},
-    REGIONS.filter(r=>r[2]===g).map(([c,n])=>el("button",{type:"button",class:"rbtn","aria-pressed":String(st.place===c),onclick:()=>setPlace(st.place===c?"":c)},n,el("span",{class:"ct num"},ready?fmtNum.format(local[c]||0):"…")))))));
+    REGIONS.filter(r=>r[2]===g).map(([c,n])=>el("button",{type:"button",class:"rbtn","aria-pressed":String(st.place===c),onclick:()=>selectRegion(c)},n,el("span",{class:"ct num"},ready?fmtNum.format(local[c]||0):"…")))))));
   // place card
   const card=$("placeCard"),totalLocal=(st.listings||[]).filter(l=>kindOk(l)&&l._places.length).length;
-  if(!st.place){card.replaceChildren(el("h3",{},"Pick a Region"),
+  if(!st.place){card.replaceChildren(el("h3",{},"Pick a Place"),
     el("p",{class:"sub"},ready?fmtNum.format(totalLocal)+" listings are tied to a specific region so far, and "+fmtNum.format(nat)+" serve the whole country. Local groups are what this map needs most.":"Loading listings…"),
     el("div",{class:"pactions"},el("a",{class:"btn btn-line",href:"#submit"},icon("map-pin-plus"),"Add a Local Listing")));paintIcons();return}
   const n=local[st.place]||0,shown=filtered().length;
-  card.replaceChildren(...[el("h3",{},RNAME[st.place]),el("p",{class:"sub"},RGROUP[st.place]),
+  card.replaceChildren(...[pin?el("span",{class:"pinned"},icon("map-pin"),pin.name+(pin.sub?", "+pin.sub:"")):null,
+    el("h3",{},RNAME[st.place]),el("p",{class:"sub"},RGROUP[st.place]+(pin?" · listings are grouped by region for now":"")),
     el("div",{class:"pstats"},el("div",{class:"pstat"},el("b",{class:"num"},fmtNum.format(n)),el("span",{},n===1?"Local listing":"Local listings")),
       el("div",{class:"pstat"},el("b",{class:"num"},fmtNum.format(nat)),el("span",{},"Nationwide, also serve here"))),
     n?null:el("p",{class:"sub"},"No local listings here yet. Know a group or project in "+RNAME[st.place]+"? Add it so others can find it."),
     el("label",{class:"toggle",for:"natToggle"},el("input",{type:"checkbox",id:"natToggle",checked:st.nat,onchange:e=>{st.nat=e.target.checked;renderResults()}}),"Include nationwide listings"),
     el("div",{class:"pactions"},el("button",{type:"button",class:"btn",onclick:()=>$("directory").scrollIntoView({block:"start"})},icon("list"),"See "+fmtNum.format(shown)+(shown===1?" Listing":" Listings")),
       el("a",{class:"btn btn-line",href:"#submit",onclick:()=>{$("f-region").value=st.place}},icon("map-pin-plus"),"Add One Here"),
-      el("button",{type:"button",class:"btn btn-line",onclick:()=>setPlace("")},icon("x"),"Clear"))].filter(Boolean));
+      el("button",{type:"button",class:"btn btn-line",onclick:()=>{$("placeQ").value="";setPlace("")}},icon("x"),"Clear"))].filter(Boolean));
   paintIcons()}
+
+/* place search: regions, provinces, cities and municipalities */
+let placeIndex=null,placeIndexLoading=null,activeIdx=-1,results=[];
+const nameKey=s=>norm(s).replace(/^city of\s+/,"").replace(/\s+city$/,"").replace(/[^a-z0-9]+/g," ").trim();
+function loadPlaceIndex(){if(placeIndex||placeIndexLoading)return placeIndexLoading;
+  placeIndexLoading=fetch("data/ph-places.json").then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{
+    const items=[];
+    for(const r of (mapGeo?mapGeo.regions:[])){items.push({kind:"region",name:r.name,sub:"Region · "+r.group,code:r.code,box:r.bbox,key:nameKey(r.name)+" "+norm(r.code)})}
+    if(!mapGeo)for(const [c,n,g] of REGIONS)items.push({kind:"region",name:n,sub:"Region · "+g,code:c,key:nameKey(n)+" "+norm(c)});
+    d.provinces.forEach(([n,code],i)=>{const g=mapGeo&&mapGeo.provinces[i];items.push({kind:"province",name:provName(n),sub:"Province · "+RNAME[code],code,box:g&&g.bbox,x:g&&g.cx,y:g&&g.cy,key:nameKey(provName(n))})});
+    for(const [n,pi,x,y] of d.places){const [pn,code]=d.provinces[pi];items.push({kind:"town",name:n,sub:provName(pn)+" · "+RNAME[code],code,x,y,key:nameKey(n)})}
+    placeIndex=items;return items}).catch(()=>{placeIndexLoading=null;placeIndex=null});
+  return placeIndexLoading}
+// Ranking: exact name, then same name ignoring "City", starts with, every word starts a word, contains, then small typos
+function searchPlaces(q){const raw=norm(q).replace(/[^a-z0-9]+/g," ").trim(),k=nameKey(q);if(!k||!placeIndex)return[];
+  const rank={region:0,province:1,town:2},toks=k.split(" "),out=[];
+  const fuzzyTok=(t,words)=>{const max=t.length>=6?2:t.length>=3?1:0;return words.some(w=>w.startsWith(t)||(max&&(lev(t,w,max)<=max||lev(t,w.slice(0,t.length),max)<=max)))};
+  for(const it of placeIndex){let s=-1;const full=norm(it.name).replace(/[^a-z0-9]+/g," ").trim(),words=[...new Set([...it.key.split(" "),...full.split(" ")])];
+    if(full===raw)s=0;else if(it.key===k)s=1;else if(it.key.startsWith(k))s=2;else if(toks.every(t=>words.some(w=>w.startsWith(t))))s=3;else if(it.key.includes(k))s=4;
+    else if(toks.every(t=>fuzzyTok(t,words)))s=5+toks.reduce((sum,t)=>sum+Math.min(...words.map(w=>Math.min(lev(t,w,3),lev(t,w.slice(0,t.length),3)))),0)/100;
+    if(s>=0)out.push([s,rank[it.kind],it])}
+  const strong=out.some(x=>x[0]<=4),list=strong?out.filter(x=>x[0]<=4):out;
+  return list.sort((a,b)=>a[0]-b[0]||a[1]-b[1]||a[2].name.localeCompare(b[2].name)).slice(0,8).map(x=>x[2])}
+const KIND_ICON={region:"layers",province:"map",town:"map-pin"};
+function renderPlaceList(){const ul=$("placeList"),inp=$("placeQ"),q=inp.value.trim();
+  if(!q){ul.hidden=true;inp.setAttribute("aria-expanded","false");inp.removeAttribute("aria-activedescendant");return}
+  ul.replaceChildren(...(results.length?results.map((it,i)=>el("li",{id:"pl-"+i,role:"option","aria-selected":String(i===activeIdx),
+      onmousedown:e=>e.preventDefault(),onclick:()=>choosePlace(it)},icon(KIND_ICON[it.kind]),el("span",{},el("b",{},it.name),el("small",{},it.sub))))
+    :[el("li",{class:"none",role:"option","aria-disabled":"true"},placeIndex?"No place matches “"+q+"”. Check the spelling, or try the province name.":"Loading places…")]));
+  ul.hidden=false;inp.setAttribute("aria-expanded","true");
+  if(activeIdx>=0)inp.setAttribute("aria-activedescendant","pl-"+activeIdx);else inp.removeAttribute("aria-activedescendant");
+  paintIcons()}
+function choosePlace(it){const inp=$("placeQ");inp.value=it.name;results=[];activeIdx=-1;renderPlaceList();
+  if(it.kind==="region"){pin=null;st.place=it.code}
+  else{pin={name:it.name,sub:it.kind==="town"?it.sub.split(" · ")[0]:RNAME[it.code],x:it.x,y:it.y,box:it.kind==="province"?it.box:null,kind:it.kind};st.place=it.code}
+  renderSectors();renderResults();$("mapStage").scrollIntoView({block:"nearest"})}
+async function onPlaceInput(){await loadPlaceIndex();results=searchPlaces($("placeQ").value);activeIdx=results.length?0:-1;renderPlaceList()}
+$("placeQ").addEventListener("focus",()=>{loadPlaceIndex()});
+$("placeQ").addEventListener("input",onPlaceInput);
+$("placeQ").addEventListener("keydown",e=>{
+  if(e.key==="ArrowDown"&&results.length){e.preventDefault();activeIdx=(activeIdx+1)%results.length;renderPlaceList()}
+  else if(e.key==="ArrowUp"&&results.length){e.preventDefault();activeIdx=(activeIdx-1+results.length)%results.length;renderPlaceList()}
+  else if(e.key==="Enter"){e.preventDefault();if(results[activeIdx])choosePlace(results[activeIdx])}
+  else if(e.key==="Escape"){if(!$("placeList").hidden){results=[];activeIdx=-1;$("placeList").hidden=true;$("placeQ").setAttribute("aria-expanded","false")}else{$("placeQ").value=""}}});
+$("placeQ").addEventListener("blur",()=>{setTimeout(()=>{$("placeList").hidden=true;$("placeQ").setAttribute("aria-expanded","false")},120)});
 function buildRegionOptions(){$("regionOpts").replaceChildren(...REGIONS.map(([c,n])=>el("option",{value:c},n)))}
 
 /* submit: build a pre-filled GitHub issue */
@@ -228,6 +358,6 @@ window.addEventListener("load",paintIcons);
   renderSectors();renderResults();renderStats();
 })();
 (async()=>{
-  try{const res=await fetch("data/ph-regions.json");if(!res.ok)throw new Error("HTTP "+res.status);buildMap(await res.json())}
+  try{const res=await fetch("data/ph-map.json");if(!res.ok)throw new Error("HTTP "+res.status);buildMap(await res.json())}
   catch{$("mapSvg").replaceChildren(el("p",{class:"mapnote"},"The map couldn’t load. Use the region list instead."))}
 })();
